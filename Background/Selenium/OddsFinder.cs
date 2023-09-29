@@ -32,7 +32,7 @@ namespace FlipalooWeb.Background
             */
             EdgeOptions edgeOptions = new EdgeOptions();
             edgeOptions.AddArgument("--headless");
-            var driver = new EdgeDriver();
+            var driver = new EdgeDriver(edgeOptions);
 
 
 
