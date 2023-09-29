@@ -1,8 +1,35 @@
-﻿@{
+﻿@using FlipalooWeb.Background;
+@using FlipalooWeb.DataStructure;
+@{
     ViewData["Title"] = "Home Page";
 }
+@inject OddsFinder oddsfinder;
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<link rel="stylesheet" href="~/css/Styles/index.css" />
+
+<div class="event-grid">
+    
+    @foreach (Event matchEvent in oddsfinder.GetEvents().Events)
+    {
+        <div class="event-preview">
+            <div class="information-row">
+                <div class="name">
+                    <h6>@matchEvent.Name</h6>
+                </div>               
+                <div class="profit">
+                    <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString()  %</b>
+                </div>
+            </div>
+            <div class="odds">
+                @foreach (Odd odd in matchEvent.Odds)
+                {
+                    <a href=@odd.UrlReference class="odd">
+                        <div class="odd">
+                            @odd.BettingShop : @odd.BettingOdd
+                        </div>                    
+                    </a>
+                }
+            </div>
+        </div>
+    }
 </div>

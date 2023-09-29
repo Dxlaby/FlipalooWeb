@@ -37,7 +37,7 @@ namespace FlipalooWeb.DataStructure
             }
         }
 
-        public List<Event> SplitToEvents(string teamName1, string teamName2)
+        public List<Event> SplitToEvents(string name, string teamName1, string teamName2)
         {
             List<Event> events = new List<Event>();
 
@@ -49,7 +49,7 @@ namespace FlipalooWeb.DataStructure
                     odds.Add(Odds[0]);
                     odds.Add(Odds[1]);
 
-                    Event newEvent = new Event(teamName1,  teamName2, odds);
+                    Event newEvent = new Event(name, teamName1,  teamName2, odds);
                     events.Add(newEvent);
                 }
             }
@@ -63,7 +63,7 @@ namespace FlipalooWeb.DataStructure
                     odds.Add(Odds[1]);
                     odds.Add(Odds[2]);
 
-                    Event newEvent = new Event(teamName1, teamName2, odds);
+                    Event newEvent = new Event(name, teamName1, teamName2, odds);
                     events.Add(newEvent);
                 }
                 if (Odds[0] != null && Odds[4] != null)
@@ -72,7 +72,7 @@ namespace FlipalooWeb.DataStructure
                     odds.Add(Odds[0]);
                     odds.Add(Odds[4]);
 
-                    Event newEvent = new Event(teamName1, teamName2, odds);
+                    Event newEvent = new Event(name, teamName1, teamName2, odds);
                     events.Add(newEvent);
                 }
                 if (Odds[1] != null && Odds[5] != null)
@@ -81,7 +81,7 @@ namespace FlipalooWeb.DataStructure
                     odds.Add(Odds[1]);
                     odds.Add(Odds[5]);
 
-                    Event newEvent = new Event(teamName1, teamName2, odds);
+                    Event newEvent = new Event(name, teamName1, teamName2, odds);
                     events.Add(newEvent);
                 }
                 if (Odds[2] != null && Odds[3] != null)
@@ -90,7 +90,7 @@ namespace FlipalooWeb.DataStructure
                     odds.Add(Odds[2]);
                     odds.Add(Odds[3]);
 
-                    Event newEvent = new Event(teamName1, teamName2, odds);
+                    Event newEvent = new Event(name, teamName1, teamName2, odds);
                     events.Add(newEvent);
                 }
             }

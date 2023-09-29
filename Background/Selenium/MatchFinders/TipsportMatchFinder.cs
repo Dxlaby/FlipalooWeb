@@ -84,9 +84,9 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             if (sortedOdds == null)
                 return null;
             else if (sortedOdds.Odds.Length == 2)
-                return new Match(recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
             else if (sortedOdds.Odds.Length == 6)
-                return new Match(recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
             else
                 return null;
         }

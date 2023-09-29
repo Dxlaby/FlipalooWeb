@@ -4,6 +4,7 @@ using OpenQA.Selenium;
 using FlipalooWeb.DataStructure;
 using FlipalooWeb.Background.BettingOddsFinders;
 using OpenQA.Selenium.Edge;
+using System.Text.Json;
 
 namespace FlipalooWeb.Background
 {
@@ -65,6 +66,18 @@ namespace FlipalooWeb.Background
             finalListOfEvents.SortByImpliedProbability();
             finalListOfEvents.PrintToConsole();
             //*/
+        }
+
+        public ListOfEvents GetEvents()
+        {
+            string json = File.ReadAllText(@"wwwroot/Data/BettingOdds.json");
+            ListOfEvents? weatherForecast = JsonSerializer.Deserialize<ListOfEvents>(json);
+            if (weatherForecast != null)
+            {
+                return weatherForecast;
+            }
+            else
+                return new ListOfEvents();
         }
     }
 }

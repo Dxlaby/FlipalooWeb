@@ -8,21 +8,23 @@ namespace FlipalooWeb.DataStructure
 {
     public class Event
     {
-        public string TeamName1 { get; set; }
-        public string TeamName2 { get; set; }
-        public float ImpliedProbability { get; set; }
+        public string Name { get; set; }
+        public string RecognitionTeamName1 { get; set; }
+        public string RecognitionTeamName2 { get; set; }
+        //public float ImpliedProbability { get; set; }
+        //public float ProfitPercentage { get; set; }
         public List<Odd> Odds { get; set; }
         //public string UrlReference { get; set; }
 
-        public Event(string teamName1, string teamName2, List<Odd> odds)
+        public Event(string name, string recognitionTeamName1, string recognitionTeamName2, List<Odd> odds)
         {
-            TeamName1 = teamName1;
-            TeamName2 = teamName2;
+            Name = name;
+            RecognitionTeamName1 = recognitionTeamName1;
+            RecognitionTeamName2 = recognitionTeamName2;
             Odds = odds;            
-            SetImpliedProbability();
         }
 
-        public void SetImpliedProbability()
+        public float GetImpliedProbability()
         {
             float impliedProbability = 0;
             foreach (Odd odd in Odds)
@@ -30,7 +32,13 @@ namespace FlipalooWeb.DataStructure
                 impliedProbability += 1 / odd.BettingOdd;
             }
 
-            ImpliedProbability = impliedProbability;
+            return impliedProbability;
+        }
+
+        public float GetProfitPercentage()
+        {
+            float profitPercentage = (1 / GetImpliedProbability() - 1) * 100;
+            return profitPercentage;
         }
     }
 }

@@ -1,0 +1,57 @@
+﻿.event-preview {
+    background-color: darkgray;
+    padding: 10px;
+    border-radius: 8px;
+    justify-content: space-between;
+}
+
+.event-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 16px;
+    row-gap: 40px;
+    
+}
+
+@media (max-width: 750px) {
+    .event-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 751px) and (max-width: 999px) {
+    .event-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (min-width: 1000px) {
+    .event-grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+}
+
+.name {
+    display: inline-block;
+    max-width: 65%;
+
+}
+
+.profit {
+    display: inline-block;
+    float: right;
+}
+
+.odds {
+    display: flex;
+    justify-content: space-between;   
+}
+
+.odd {
+    display: inline-block;
+    text-decoration: none;
+    color: lightgray;
+    background-color: #363636;
+    padding: 3px;
+    border-radius: 999999px;
+}

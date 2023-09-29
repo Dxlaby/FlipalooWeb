@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FlipalooWeb.DataStructure
 {
@@ -33,7 +35,7 @@ namespace FlipalooWeb.DataStructure
 
         public void SortByImpliedProbability()
         {
-            Events.Sort((a, b) => a.ImpliedProbability.CompareTo(b.ImpliedProbability));
+            Events.Sort((a, b) => b.GetImpliedProbability().CompareTo(a.GetImpliedProbability()));
             Events.Reverse();
         }
         /*
@@ -45,7 +47,7 @@ namespace FlipalooWeb.DataStructure
 
         public void WriteToJson(string JSONPath)
         {
-            string json = System.Text.Json.JsonSerializer.Serialize(Events);
+            string json = JsonSerializer.Serialize<ListOfEvents>(this);
             File.WriteAllText(JSONPath, json);
 
             //https://stackoverflow.com/questions/16921652/how-to-write-a-json-file-in-c
@@ -58,15 +60,15 @@ namespace FlipalooWeb.DataStructure
 
             foreach (Event oddsEvent in Events)
             {
-                Console.WriteLine(oddsEvent.TeamName1 + " - " + oddsEvent.TeamName2);
+                Console.WriteLine(oddsEvent.RecognitionTeamName1 + " - " + oddsEvent.RecognitionTeamName2);
                 foreach (Odd value in oddsEvent.Odds)
                 {
                     Console.Write(value.BettingShop + ": ");
                     Console.Write(value.BettingOdd + "; ");
                 }
                 Console.WriteLine();
-                Console.WriteLine("Implied probability: " + oddsEvent.ImpliedProbability);
-                float profit = 1 / oddsEvent.ImpliedProbability - 1;
+                Console.WriteLine("Implied probability: " + oddsEvent.GetImpliedProbability());
+                float profit = 1 / oddsEvent.GetImpliedProbability() - 1;
                 Console.WriteLine("Profit: " + profit * 100 + "%");
                 Console.WriteLine();
                 Console.WriteLine();

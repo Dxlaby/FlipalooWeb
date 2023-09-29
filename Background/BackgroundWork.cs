@@ -16,10 +16,9 @@ namespace FlipalooWeb.Background
             while (!stoppingToken.IsCancellationRequested)
             {
                 OddsFinder oddsFinder = new OddsFinder();
-                oddsFinder.FindOdds();
+                //oddsFinder.FindOdds();
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
-
         }
     }
 }

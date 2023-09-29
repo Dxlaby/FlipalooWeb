@@ -1,18 +1,100 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+.main-container {
+    flex-grow: 1;
+    margin-top: 70px;
+    margin-bottom: 50px;
+    padding-top: 10px;
+    background-color: gray;
+}
+
+.top-head {
+    background-color: #545454;
+    color: lightslategray;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    height: 70px;
+    padding: 10px;
+    align-content: center;
+    border-bottom: 2px solid black;
+}
+
+.web-name {
+    display: inline-block;
+    color: lightgray;
+    background-color: #545454;
+    text-decoration: none;
+    height: 50px;
+    width: 180px;
+    align-content: center;
+    padding: 3px;
+    padding-left: 22px;
+    border-radius: 25px;
+}
+
+.web-name-link {
+    text-decoration: none;
+    color: lightgray;
+    text-size-adjust: auto;
+    font-size: 30px;
+}
+
+.aboutUs {
+    display: inline-block;
+    color: lightgray;
+    background-color: #545454;
+    text-decoration: none;
+    height: 50px;
+    width: 180px;
+    align-content: center;
+    padding: 3px;
+    padding-left: 22px;
+    border-radius: 25px;
+    float: right;
+}
+
+.aboutUs-link {
+    text-decoration: none;
+    color: lightgray;
+    text-size-adjust: auto;
+    font-size: 30px;
+}
+
+.aboutUs:hover {
+    color: ghostwhite;
+    background-color: gray;
+}
+
+.web-name:hover {
+    color: ghostwhite;
+    background-color: gray;
+}
+
+.aboutUs:active {
+    color: white;
+    background-color: lightgray;
+}
+
+.web-name:active {
+    color: white;
+    background-color: lightgray;
 }
