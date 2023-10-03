@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using FlipalooWeb.DataStructure;
-/*
+
 namespace FlipalooWeb.Background.BettingOddsFinders
 {
     internal class BetanoMatchFinder
@@ -27,6 +27,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         By regionNameElementPath;
         By checkBoxElementPath;
         By closePopUpButton;
+        By referenceLinkElementPath;
         //By gridElementPath;
 
         //string oddClassName;
@@ -66,9 +67,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             checkBoxElementPath = By.CssSelector(".tw-inline-flex");
             closePopUpButton = By.CssSelector(".sb-modal__close__btn");
             //gridElementPath = By.CssSelector(".grid__column");
-            
+
             //oddClassName = "btnRate";
             //blockedOddClassName = "btnRate disabled";
+            referenceLinkElementPath = By.CssSelector(".GTM-event-link");
         }
 
         public ListOfMatches FindAllMatches(IWebDriver driver)
@@ -140,7 +142,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             foreach (IWebElement matchElement in matchesElements)
             {
-                IMatch? match = GetMatchFromElement(matchElement);
+                Match? match = GetMatchFromElement(matchElement);
                 if (match != null)
                     listOfMatches.Matches.Add(match);
             }
@@ -166,7 +168,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             foreach (IWebElement matchElement in matchesElements)
             {
-                IMatch? match = GetMatchFromElement(matchElement);
+                Match? match = GetMatchFromElement(matchElement);
                 if (match != null)
                     listOfMatches.Matches.Add(match);
             }
@@ -174,20 +176,23 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return listOfMatches;
         }
 
-        private IMatch? GetMatchFromElement(IWebElement matchElement)
+        private Match? GetMatchFromElement(IWebElement matchElement)
         {
             var matchNameElements = matchElement.FindElements(nameElementPath);
             string matchName = matchNameElements.ElementAt(0).Text + " - " + matchNameElements.ElementAt(1).Text;
-            Tuple<string, float?>[]? roughOdds = null;
+            IWebElement referenceElement = matchElement.FindElement(referenceLinkElementPath);
+            string referenceUrl = referenceElement.GetAttribute("href");
+
+            Odd?[]? roughOdds = null;
             
             try
             {
                 var oddsElement = matchElement.FindElement(oddsElementPath);
-                roughOdds = GetOddsFromElement(oddsElement);
+                roughOdds = GetOddsFromElement(oddsElement, referenceUrl);
             }
             catch
             {
-               
+               return null;
             }
             
             
@@ -197,56 +202,63 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             if (sortedOdds == null)
                 return null;
-            else if (sortedOdds.Length == 2)
-                return new TwoOutcomeMatchOdds(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
-            else if (sortedOdds.Length == 6)
-                return new ThreeOutcomeMatchOdds(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+            else if (sortedOdds.Odds.Length == 2)
+                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+            else if (sortedOdds.Odds.Length == 6)
+                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
             else
                 return null;
         }
 
-        private Tuple<string, float?>[] GetOddsFromElement(IWebElement oddsElement)
+        private Odd?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
         {
             var oddElements = oddsElement.FindElements(oddElementPath);
-            List<Tuple<string, float?>> oddsList = new List<Tuple<string, float?>>();
+            List<Odd?> oddsList = new List<Odd?>();
 
             foreach (IWebElement oddElement in oddElements)
             {
-                var odd = GetOddFromElement(oddElement);
+                var odd = GetOddFromElement(oddElement, referenceUrl);
                 oddsList.Add(odd);
             }
 
             return oddsList.ToArray();
         }
 
-        private Tuple<string, float?> GetOddFromElement(IWebElement element)
+        private Odd? GetOddFromElement(IWebElement element, string referenceUrl)
         {
             float? odd = float.Parse(element.Text.Replace(" ", ""), CultureInfo.InvariantCulture.NumberFormat);
-            return new Tuple<string, float?>(bettingShopName, odd);
+            if (odd == null)
+                return null;
+            else
+                return new Odd(bettingShopName, referenceUrl, odd.Value);
         }
 
-        private Tuple<string, float?>[]? SortOdds(Tuple<string, float?>[]? roughOdds)
+        private MatchOdds SortOdds(Odd?[] roughOdds)
         {
-            if (roughOdds == null)
+
+            if (roughOdds.Count() == 2)
             {
-                return null;
-            }
-            else if (roughOdds.Count() == 2)
-            {
-                return roughOdds;
+                return new MatchOdds(roughOdds);
             }
             else if (roughOdds.Count() == 3)
             {
-                Tuple<string, float?>[] finalOdds =
+                Odd?[] finalOdds =
                 { roughOdds[0], roughOdds[1], roughOdds[2],
-                    new Tuple<string, float?>(bettingShopName, null),
-                    new Tuple<string, float?>(bettingShopName, null),
-                    new Tuple<string, float?>(bettingShopName, null)};
-                return finalOdds;
+                    null, null, null};
+                return new MatchOdds(finalOdds);
+            }
+            else if (roughOdds.Count() == 5)
+            {
+                Odd?[] finalOdds =
+                { roughOdds[0], roughOdds[2], roughOdds[4],
+                    roughOdds[1], roughOdds[3], null};
+                //prohazeni kurzu tak aby byly ve formatu 1, 0, 2, 10, 20, 12
+                return new MatchOdds(finalOdds);
             }
             else
             {
-                return null;
+                Odd?[] finalOdds = { null, null };
+                return new MatchOdds(finalOdds);
             }
         }
 
@@ -304,7 +316,8 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return stringBuilder
                 .ToString()
                 .Normalize(NormalizationForm.FormC);
+
+            //https://stackoverflow.com/questions/249087/how-do-i-remove-diacritics-accents-from-a-string-in-net
         }
     }
 }
-*/

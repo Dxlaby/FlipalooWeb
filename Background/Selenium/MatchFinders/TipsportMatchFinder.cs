@@ -196,6 +196,8 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return stringBuilder
                 .ToString()
                 .Normalize(NormalizationForm.FormC);
+
+            //https://stackoverflow.com/questions/249087/how-do-i-remove-diacritics-accents-from-a-string-in-net
         }
     }
 }

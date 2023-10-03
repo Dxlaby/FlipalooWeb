@@ -8,5 +8,6 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 {
     internal class FortunaMatchFinder : IMatchFinder
     {
+
     }
 }
