@@ -22,11 +22,11 @@ body {
     margin-top: 70px;
     margin-bottom: 50px;
     padding-top: 10px;
-    background-color: gray;
+    background-color: #000000;
 }
 
 .top-head {
-    background-color: #545454;
+    background-color: #000000;
     color: lightslategray;
     position: fixed;
     top: 0;
@@ -35,13 +35,14 @@ body {
     height: 70px;
     padding: 10px;
     align-content: center;
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid lightgray;
+    box-shadow: 0px 0px 12px lightgray;
 }
 
 .web-name {
     display: inline-block;
     color: lightgray;
-    background-color: #545454;
+    background-color: #424242;
     text-decoration: none;
     height: 50px;
     width: 180px;
@@ -61,7 +62,7 @@ body {
 .aboutUs {
     display: inline-block;
     color: lightgray;
-    background-color: #545454;
+    background-color: #424242;
     text-decoration: none;
     height: 50px;
     width: 180px;
@@ -81,12 +82,12 @@ body {
 
 .aboutUs:hover {
     color: ghostwhite;
-    background-color: gray;
+    background-color: #aaa;
 }
 
 .web-name:hover {
     color: ghostwhite;
-    background-color: gray;
+    background-color: #aaa;
 }
 
 .aboutUs:active {

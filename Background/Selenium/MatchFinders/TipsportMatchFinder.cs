@@ -27,7 +27,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         public TipsportMatchFinder()
         {
-            bettingShopName = "TipSport";
+            bettingShopName = "Tipsport";
             urlAll = "https://www.tipsport.cz/kurzy?timeFilter=form.period.anytime&limit=10000";
             urlTomorrow = "https://www.tipsport.cz/kurzy/zitra?limit=10000";
             matchElementPath = By.CssSelector(".o-matchRow");

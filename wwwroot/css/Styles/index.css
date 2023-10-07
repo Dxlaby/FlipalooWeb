@@ -1,5 +1,6 @@
 ﻿.event-preview {
-    background-color: darkgray;
+    background-color: #212529;
+    color: lightgray;
     padding: 10px;
     border-radius: 8px;
     justify-content: space-between;
@@ -54,4 +55,30 @@
     background-color: #363636;
     padding: 3px;
     border-radius: 999999px;
+}
+
+.green {
+    color: green;
+}
+
+.red{
+    color: red;
+}
+
+.Tipsport,
+.TipSport{
+    color: white;
+    background-color: #007aff;
+    text-decoration: underline;
+    text-decoration-color: rgb(255, 142, 19);
+}
+
+.Betano{
+    color: white;
+    background-color: #ff6600;
+}
+
+.Fortuna{
+    color:black;
+    background-color: #FFDB01;
 }

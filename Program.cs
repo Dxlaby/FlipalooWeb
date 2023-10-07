@@ -16,7 +16,7 @@ builder.Host.UseSystemd(); //https://stackoverflow.com/questions/71233335/use-sy
 // Add services to the container.
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddHostedService<BackgroundWork>();
 builder.Services.AddTransient<OddsFinder>();
 
