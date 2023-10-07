@@ -11,59 +11,44 @@ namespace FlipalooWeb.Background
 {
     public class OddsFinder
     {
-        public void FindOdds() 
+        public void FindOdds()
         {
-            //vytvorit nazvy tymu v zapasech k rozpoznani
-            //upravit split events v ThreeOutcomeMatchOdds
-            //*
+            List<IMatchFinder> matchFinders = new List<IMatchFinder>();
             
-            //MatchFinder matchFinder = new MatchFinder();
-            ListOfMatches finalListOfMatches = new ListOfMatches();
-            TipsportMatchFinder tipsportMatchFinder = new TipsportMatchFinder();
-            BetanoMatchFinder betanoMatchFinder = new BetanoMatchFinder();
+            matchFinders.Add(new TipsportMatchFinder());
+            matchFinders.Add(new FortunaMatchFinder());
+            matchFinders.Add(new BetanoMatchFinder());
 
-
-            
-           /* FirefoxDriverService service = FirefoxDriverService.CreateDefaultService(@"wwwroot\Drivers\", "geckodriver.exe");
-            service.FirefoxBinaryPath = @"C:\Program Files\Mozilla Firefox\firefox.exe";*/            
             var firefoxOptions = new FirefoxOptions();
-            firefoxOptions.AddArgument("--headless");
-            //firefoxOptions.AddArgument("no-sandbox");
-            //firefoxOptions.BinaryLocation = @"C:\Program Files\Mozilla Firefox\firefox.exe";       
+            //firefoxOptions.AddArgument("--headless");
+            var driver = new FirefoxDriver(firefoxOptions);
             
-            EdgeOptions edgeOptions = new EdgeOptions();
-            edgeOptions.AddArgument("--headless");
-            var driver = new ChromeDriver();
-
-
-
-
-
-            ListOfMatches tipsportMatches = tipsportMatchFinder.FindAllMatches(driver);
-            ListOfMatches betanoMatches = betanoMatchFinder.FindAllMatches(driver);
+            ListOfMatches finalListOfMatches = new ListOfMatches();
+            
+            foreach (var matchFinder in matchFinders)
+            {
+                finalListOfMatches.Merge(matchFinder.FindAllMatches(driver));
+            }
             driver.Quit();
-            //ListOfMatches fortunaMatches = matchFinder.FortunaFindMatches();
-
-            finalListOfMatches.Merge(tipsportMatches);
-            //finalListOfMatches.Merge(fortunaMatches);
-            finalListOfMatches.Merge(betanoMatches);
-
-            ListOfEvents finalListOfEvents = finalListOfMatches.SplitToEvents();
-            finalListOfEvents.SortByImpliedProbability();
-            finalListOfEvents.WriteToJson(@"wwwroot/Data/BettingOdds.json");
             
+            List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
+            finalListOfEvents.Sort((a, b) => a.GetImpliedProbability().CompareTo(b.GetImpliedProbability()));
+            var listOfEvents = finalListOfEvents.Take(500);
+            string json = JsonSerializer.Serialize<IEnumerable<Event>>(listOfEvents);
+            File.WriteAllText(@"wwwroot/Data/BettingOdds.json", json);
+            //https://stackoverflow.com/questions/16921652/how-to-write-a-json-file-in-c
         }
 
-        public ListOfEvents GetEvents()
+        public List<Event> GetEvents()
         {
             string json = File.ReadAllText(@"wwwroot/Data/BettingOdds.json");
-            ListOfEvents? weatherForecast = JsonSerializer.Deserialize<ListOfEvents>(json);
+            List<Event>? weatherForecast = JsonSerializer.Deserialize<List<Event>>(json);
             if (weatherForecast != null)
             {
                 return weatherForecast;
             }
             else
-                return new ListOfEvents();
+                return new List<Event>();
         }
     }
 }

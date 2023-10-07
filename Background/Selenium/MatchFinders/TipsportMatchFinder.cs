@@ -81,9 +81,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             var recognitionTeams = GetRecognitionTeams(matchName);
 
-            if (sortedOdds == null)
-                return null;
-            else if (sortedOdds.Odds.Length == 2)
+            if (sortedOdds.Odds.Length == 2)
                 return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
             else if (sortedOdds.Odds.Length == 6)
                 return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
@@ -110,10 +108,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         private Odd? GetOddFromElement(IWebElement element, string referenceUrl)
         {
             float? odd = float.Parse(element.Text, CultureInfo.InvariantCulture.NumberFormat);
-            if (odd == null)
-                return null;
-            else
-                return new Odd(bettingShopName, referenceUrl, odd.Value);
+            return new Odd(bettingShopName, referenceUrl, odd.Value);
         }
 
         private MatchOdds SortOdds(Odd?[] roughOdds)
@@ -146,36 +141,18 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         private Tuple<string, string> GetRecognitionTeams(string matchName)
         {
+            matchName = RemoveDiacritics(matchName);
+            matchName = matchName.ToLower();
             string[] teamNames = matchName.Split(" - ", 2);
-            string[] recognitionTeams = new string[2];
-            for(int i = 0; i < teamNames.Length; i++)
-            { 
-                string[] teamWordsArray = teamNames[i].Split(" ");
-                List<string> finalTeamWordList = new List<string>();
-                if (teamNames[i].Length > 3)
-                {
-                    List<string> teamWordList = teamWordsArray.ToList();
-
-                    foreach (string word in teamWordList)
-                    {
-                        if (word.Length > 2 && !word.StartsWith("(") && !word.EndsWith("."))
-                        {
-                            finalTeamWordList.Add(word);
-                        }
-                    }
-
-                }
-                else
-                {
-                    finalTeamWordList = teamWordsArray.ToList();
-                }
-                recognitionTeams[i] = String.Join("", finalTeamWordList);
-                recognitionTeams[i] = RemoveDiacritics(recognitionTeams[i]);
-                recognitionTeams[i] = recognitionTeams[i].ToLowerInvariant();
+            if (teamNames.Length == 2)
+            {
+                Tuple<string, string> recognitionTeamsTuple = new Tuple<string, string>(teamNames[0], teamNames[1]);
+                return recognitionTeamsTuple;
             }
-
-            Tuple<string, string> recognitionTeamsTuple = new Tuple<string, string>(recognitionTeams[0], recognitionTeams[1]);
-            return recognitionTeamsTuple;
+            else
+            {
+                return new Tuple<string, string>(teamNames[0], "");
+            }
         }
 
         private string RemoveDiacritics(string text)

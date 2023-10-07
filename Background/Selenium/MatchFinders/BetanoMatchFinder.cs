@@ -12,7 +12,7 @@ using FlipalooWeb.DataStructure;
 
 namespace FlipalooWeb.Background.BettingOddsFinders
 {
-    internal class BetanoMatchFinder
+    internal class BetanoMatchFinder : IMatchFinder
     {
         string bettingShopName;
         List<string> sportUrls;
@@ -117,7 +117,14 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             foreach (string regionUrl in regionUrls)
             {
-                driver.Navigate().GoToUrl(regionUrl);
+                try
+                {
+                    driver.Navigate().GoToUrl(regionUrl);
+                }
+                catch
+                {
+                    continue;
+                }
                 ListOfMatches listOfMatches = FindMatches(driver);
                 finalListOfMatches.Merge(listOfMatches);
             }
@@ -264,38 +271,18 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         private Tuple<string, string> GetRecognitionTeams(string matchName)
         {
-            matchName.Replace("/", " ");
-            matchName.Replace(".", " ");
+            matchName = RemoveDiacritics(matchName);
+            matchName = matchName.ToLower();
             string[] teamNames = matchName.Split(" - ", 2);
-            string[] recognitionTeams = new string[2];
-            for (int i = 0; i < teamNames.Length; i++)
+            if (teamNames.Length == 2)
             {
-                string[] teamWordsArray = teamNames[i].Split(" ");
-                List<string> finalTeamWordList = new List<string>();
-                if (teamNames[i].Length > 3)
-                {
-                    List<string> teamWordList = teamWordsArray.ToList();
-
-                    foreach (string word in teamWordList)
-                    {
-                        if (word.Length > 2 && !word.StartsWith("("))
-                        {
-                            finalTeamWordList.Add(word);
-                        }
-                    }
-
-                }
-                else
-                {
-                    finalTeamWordList = teamWordsArray.ToList();
-                }
-                recognitionTeams[i] = String.Join("", finalTeamWordList);
-                recognitionTeams[i] = RemoveDiacritics(recognitionTeams[i]);
-                recognitionTeams[i] = recognitionTeams[i].ToLowerInvariant();
+                Tuple<string, string> recognitionTeamsTuple = new Tuple<string, string>(teamNames[0], teamNames[1]);
+                return recognitionTeamsTuple;
             }
-
-            Tuple<string, string> recognitionTeamsTuple = new Tuple<string, string>(recognitionTeams[0], recognitionTeams[1]);
-            return recognitionTeamsTuple;
+            else
+            {
+                return new Tuple<string, string>(teamNames[0], "");
+            }
         }
 
         private string RemoveDiacritics(string text)

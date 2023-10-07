@@ -16,17 +16,10 @@ namespace FlipalooWeb.DataStructure
             Matches = new List<Match>();
         }
 
-        public void AddMatch(Match _match)
+        public void AddMatch(Match match)
         {
-            Matches.Add(_match);
+            Matches.Add(match);
         }
-
-        /*
-        public void SortByName()
-        {
-            Matches.Sort((a, b) => a.Name.CompareTo(b.Name));
-        }
-        */
 
         public void Merge(ListOfMatches mergingListOfMatches)
         {   
@@ -45,43 +38,15 @@ namespace FlipalooWeb.DataStructure
             Matches.AddRange(mergingListOfMatches.Matches);
         }
 
-        public ListOfEvents SplitToEvents()
+        public List<Event> SplitToEvents()
         {
-            ListOfEvents listOfEvents = new ListOfEvents();
+            List<Event> listOfEvents = new List<Event>();
             foreach (Match match in Matches)
             {
-                ListOfEvents addingListOfEvents = match.SplitToEvents();
-                listOfEvents.AddListOfEvents(addingListOfEvents);
+                List<Event> addingListOfEvents = match.SplitToEvents();
+                listOfEvents.AddRange(addingListOfEvents);
             }
             return listOfEvents;
         }
-
-        /*
-        public void PrintToConsole()
-        {
-            Console.Write("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-            foreach (IMatch match in Matches)
-            {
-                Console.WriteLine(match.Name);
-                foreach (Tuple<string, float?> value in match.Odds)
-                {
-                    Console.Write(value.Item1 + ": ");
-
-                    if (value.Item2 != null)
-                    {
-                        Console.Write(value.Item2 + "; ");
-                    }
-                    else
-                    {
-                        Console.Write("none; ");
-                    }
-
-                }
-                Console.WriteLine();
-                Console.WriteLine();
-            }
-            Console.WriteLine("Celkovy pocet zapasu: " + Matches.Count);
-        }
-        */
     }
 }

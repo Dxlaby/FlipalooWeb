@@ -65,8 +65,7 @@
     color: red;
 }
 
-.Tipsport,
-.TipSport{
+.Tipsport {
     color: white;
     background-color: #007aff;
     text-decoration: underline;
