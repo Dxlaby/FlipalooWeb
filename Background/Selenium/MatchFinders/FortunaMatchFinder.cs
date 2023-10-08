@@ -36,12 +36,20 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             //initialize driver and stu
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
             driver.Navigate().GoToUrl(url);
-            wait.Until(ExpectedConditions.ElementIsVisible(cookieButtonElementPath));
+            
             
             //click on cookie button
-            IWebElement buttonConsent = driver.FindElement(cookieButtonElementPath);
-            buttonConsent.Click();
-            
+            try
+            {
+                wait.Until(ExpectedConditions.ElementIsVisible(cookieButtonElementPath));
+                IWebElement buttonConsent = driver.FindElement(cookieButtonElementPath);
+                buttonConsent.Click();
+            }
+            catch
+            {
+                
+            }
+
             ScrollDown(driver, wait);
             
             //finally find and save all macthes odds

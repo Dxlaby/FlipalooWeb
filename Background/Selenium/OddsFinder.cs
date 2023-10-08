@@ -18,10 +18,19 @@ namespace FlipalooWeb.Background
             matchFinders.Add(new TipsportMatchFinder());
             matchFinders.Add(new FortunaMatchFinder());
             matchFinders.Add(new BetanoMatchFinder());
-
+            
+            
             var firefoxOptions = new FirefoxOptions();
             firefoxOptions.AddArgument("--headless");
-            var driver = new FirefoxDriver(firefoxOptions);
+            firefoxOptions.AddArgument("-no-sandbox");
+            var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
+            
+            /*@"wwwroot/Drivers/geckodriver",
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            options.AddArgument("no-sandbox");
+            var driver = new ChromeDriver(@"wwwroot/Drivers/chromedriver-linux64/chromedriver",options);
+            */
             
             ListOfMatches finalListOfMatches = new ListOfMatches();
             

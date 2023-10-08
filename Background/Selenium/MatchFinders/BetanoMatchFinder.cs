@@ -80,8 +80,6 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
 
             driver.Navigate().GoToUrl("https://www.betano.cz/");
-            driver.Manage().Cookies.DeleteAllCookies();
-            driver.FindElement(closePopUpButton).Click();
             Thread.Sleep(1000);
 
             foreach (string url in sportUrls)
