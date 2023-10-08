@@ -20,23 +20,38 @@ namespace FlipalooWeb.DataStructure
         {
             Matches.Add(match);
         }
+        
+        public void AddListOfMatches(ListOfMatches listOfMatches)
+        {
+            Matches.AddRange(listOfMatches.Matches);
+        }
+
+        public void RemoveListOfMatches(ListOfMatches listOfMatches)
+        {
+            Matches = Matches.Except(listOfMatches.Matches).ToList();
+        }
 
         public void Merge(ListOfMatches mergingListOfMatches)
         {   
             foreach (Match match in Matches)
             {
-                foreach (Match  mergingMatch in mergingListOfMatches.Matches)
+                ListOfMatches removeMatches = new ListOfMatches();
+                
+                foreach (Match mergingMatch in mergingListOfMatches.Matches)
                 {
                     if (match.IsSame(mergingMatch))
                     {
                         match.Merge(mergingMatch);
-                        mergingListOfMatches.Matches.Remove(mergingMatch);
-                        break;
+                        removeMatches.Matches.Add(mergingMatch);
                     }
                 }
+
+                mergingListOfMatches.RemoveListOfMatches(removeMatches);
             }
             Matches.AddRange(mergingListOfMatches.Matches);
         }
+
+        
 
         public List<Event> SplitToEvents()
         {

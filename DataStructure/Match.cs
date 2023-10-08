@@ -34,10 +34,11 @@
 
         public bool IsSame(Match otherMatch)
         {
-            string[] teamNames1 = {RecognitionTeamName1, RecognitionTeamName2};
-            string[] teamNames2 = { otherMatch.RecognitionTeamName1, otherMatch.RecognitionTeamName2 };
-            if (RecognitionTeamName1 == otherMatch.RecognitionTeamName2
-                && RecognitionTeamName2 == otherMatch.RecognitionTeamName2)
+            if ( (RecognitionTeamName1.Contains(otherMatch.RecognitionTeamName1) 
+                || otherMatch.RecognitionTeamName1.Contains(RecognitionTeamName1))
+                && (RecognitionTeamName2.Contains(otherMatch.RecognitionTeamName2) 
+                || otherMatch.RecognitionTeamName2.Contains(RecognitionTeamName2))
+                && (Odds.Odds.Length == otherMatch.Odds.Odds.Length))
             {
                 return true;
             }

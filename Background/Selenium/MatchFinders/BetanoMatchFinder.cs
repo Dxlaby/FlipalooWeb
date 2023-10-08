@@ -126,7 +126,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                     continue;
                 }
                 ListOfMatches listOfMatches = FindMatches(driver);
-                finalListOfMatches.Merge(listOfMatches);
+                finalListOfMatches.AddListOfMatches(listOfMatches);
             }
 
             return finalListOfMatches;
