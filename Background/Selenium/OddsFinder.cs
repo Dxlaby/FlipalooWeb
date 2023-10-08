@@ -20,9 +20,8 @@ namespace FlipalooWeb.Background
             matchFinders.Add(new BetanoMatchFinder());
 
             var firefoxOptions = new FirefoxOptions();
-            
-            //firefoxOptions.AddArgument("--headless");
-            var driver = new FirefoxDriver();
+            firefoxOptions.AddArgument("--headless");
+            var driver = new FirefoxDriver(firefoxOptions);
             
             ListOfMatches finalListOfMatches = new ListOfMatches();
             
