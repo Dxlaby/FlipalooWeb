@@ -24,7 +24,7 @@ namespace FlipalooWeb.Background
             firefoxOptions.AddArgument("--headless");
             firefoxOptions.AddArgument("-no-sandbox");
             var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
-            
+
             /*@"wwwroot/Drivers/geckodriver",
             var options = new ChromeOptions();
             options.AddArgument("--headless");

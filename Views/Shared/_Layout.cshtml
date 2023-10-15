@@ -14,29 +14,28 @@
     <header class="top-head">       
         
         <a class="web-name-link" asp-area="" asp-controller="Home" asp-action="Index">
-            <div class="web-name">
-                Flipaloo
+            
+            <div class="logo-container">
+                <img class="logo" src="~/logo.jpg" alt="logo"/>
             </div>
         </a>
         
         <a class="aboutUs-link" asp-area="" asp-controller="Home" asp-action="AboutUs">
             <div class="aboutUs">
-                About Us
+                ?
             </div>
         </a>
     </header>
 
     <div class="main-container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - FlipalooWeb - <a asp-area="" asp-controller="Home" asp-action="AboutUs">About Us</a>
+       
+        @RenderBody()
+        <div class="foot">
+            &copy; 2023 - Flipaloo
+            @* - <a asp-area="" asp-controller="Home" asp-action="AboutUs">About Us</a> *@
         </div>
-    </footer>
+    </div>
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
