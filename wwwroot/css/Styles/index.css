@@ -1,11 +1,16 @@
 ﻿.event-preview {
+    /*display: flex;*/
+    /*justify-content: flex-start; !* Center content to the left within each grid cell *!*/
+    /*align-items: center;*/
+    
+    margin: auto    ;
     background-color: #212529;
     color: lightgray;
     padding: 10px;
     border-radius: 8px;
     justify-content: space-between;
     /*height: 100px;*/
-    /*width: 340px;*/
+    width: 350px;
 }   
 
 .event-grid {
@@ -13,7 +18,8 @@
     grid-template-columns: 1fr 1fr 1fr;
     column-gap: 16px;
     row-gap: 40px;
-    
+    margin-bottom: 30px;
+
 }
 
 @media (max-width: 799px) {

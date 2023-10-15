@@ -25,13 +25,6 @@ namespace FlipalooWeb.Background
             firefoxOptions.AddArgument("-no-sandbox");
             var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
 
-            /*@"wwwroot/Drivers/geckodriver",
-            var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            options.AddArgument("no-sandbox");
-            var driver = new ChromeDriver(@"wwwroot/Drivers/chromedriver-linux64/chromedriver",options);
-            */
-            
             ListOfMatches finalListOfMatches = new ListOfMatches();
             
             foreach (var matchFinder in matchFinders)
