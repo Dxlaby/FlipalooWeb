@@ -22,17 +22,32 @@ namespace FlipalooWeb.Background
             
             var firefoxOptions = new FirefoxOptions();
             firefoxOptions.AddArgument("--headless");
-            firefoxOptions.AddArgument("-no-sandbox");
-            var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
+            // firefoxOptions.AddArgument("--disable-extensions"); // Disable browser extensions
+            // firefoxOptions.AddArgument("--disable-gpu"); // Disable GPU
+            // firefoxOptions.AddArgument("--disable-software-rasterizer"); // Disable software rasterizer
+            // firefoxOptions.AddArgument("--disable-web-security"); // Disable web security
+            // firefoxOptions.AddArgument("--blink-settings=imagesEnabled=false"); // Disable images
+            // firefoxOptions.AddArgument("--mute-audio");
+            firefoxOptions.AddArgument("--no-sandbox");
+            //
+            // FirefoxProfile profile = new FirefoxProfile();
+            // profile.SetPreference("browser.cache.disk.enable", false); // Disable disk cache
+            // profile.SetPreference("browser.cache.memory.enable", false); // Disable memory cache
+            // profile.SetPreference("browser.cache.offline.enable", false); // Disable offline cache
+            // firefoxOptions.Profile = profile;
+            //
+            //
+            //var profile = new FirefoxProfileManager();
 
             ListOfMatches finalListOfMatches = new ListOfMatches();
             
             foreach (var matchFinder in matchFinders)
             {
+                var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
                 var listOfMatches = matchFinder.FindAllMatches(driver);
                 finalListOfMatches.Merge(listOfMatches);
+                driver.Quit();
             }
-            driver.Quit();
             
             List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
             finalListOfEvents.Sort((a, b) => a.GetImpliedProbability().CompareTo(b.GetImpliedProbability()));
