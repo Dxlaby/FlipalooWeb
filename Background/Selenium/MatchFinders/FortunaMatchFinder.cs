@@ -34,7 +34,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         public ListOfMatches FindAllMatches(IWebDriver driver)
         { 
             //initialize driver and stu
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             driver.Navigate().GoToUrl(url);
             
             

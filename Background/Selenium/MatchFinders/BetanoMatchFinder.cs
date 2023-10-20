@@ -77,7 +77,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         {
             List<string> regionUrls = new List<string>();
             ListOfMatches finalListOfMatches = new ListOfMatches();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
 
             driver.Navigate().GoToUrl("https://www.betano.cz/");
             Thread.Sleep(1000);
@@ -132,7 +132,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         private ListOfMatches FindMatches(IWebDriver driver)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             try
             {
                 wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));
@@ -158,7 +158,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         private ListOfMatches FindMatchesByUrl(IWebDriver driver, string url)
         {
             driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             try
             {
                 wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));

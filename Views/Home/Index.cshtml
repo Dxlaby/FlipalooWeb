@@ -1,45 +1,95 @@
 ﻿@using FlipalooWeb.Background;
 @using FlipalooWeb.DataStructure;
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using System.Text.Json
 @{
     ViewData["Title"] = "Home Page";
 }
 @inject OddsFinder oddsfinder;
+@{
+    List<Event> matchEvents = new List<Event>();
+}
 
-<link rel="stylesheet" href="~/css/Styles/index.css" />
+
+<link rel="stylesheet" href="~/css/index.css" />
 
 <div class="event-grid">
     
-    @foreach (Event matchEvent in oddsfinder.GetEvents())
-    {
+    @* @foreach (Event matchEvent in matchEvents) *@
+    @* { *@
+    @*     <div class="event-preview"> *@
+    @*         <div class="information-row"> *@
+    @*             <div class="name"> *@
+    @*                 <h6>@matchEvent.Name</h6> *@
+    @*             </div> *@
+    @* *@
+    @*             @if (matchEvent.GetProfitPercentage() > 0) *@
+    @*             { *@
+    @*                 <div class="profit green"> *@
+    @*                     <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b> *@
+    @*                 </div> *@
+    @*             } *@
+    @*             else *@
+    @*             { *@
+    @*                 <div class="profit red"> *@
+    @*                     <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b> *@
+    @*                 </div> *@
+    @*             } *@
+    @*         </div> *@
+    @*         <div class="odds"> *@
+    @*             @foreach (Odd odd in matchEvent.Odds) *@
+    @*             { *@
+    @*                 <a href=@odd.UrlReference class="odd @odd.BettingShop"> *@
+    @*                     <div class="odd @odd.BettingShop"> *@
+    @*                         @odd.BettingShop: @odd.BettingOdd *@
+    @*                     </div> *@
+    @*                 </a> *@
+    @*             } *@
+    @*         </div> *@
+    @*     </div> *@
+    @* } *@
+</div>
+
+<button class="btn" style="background: white"> More </button>
+
+<script src="js/handlebars.js"></script>
+<script>
+    Handlebars.registerHelper('if_grt', function(a, b, opts) {
+        if (a > b) {
+            return opts.fn(this);
+        } else {
+            return opts.inverse(this);
+        }
+    });
+</script>
+<script id="events-template" type="text/x-handlebars-template">
+    {{#each this}}
         <div class="event-preview">
             <div class="information-row">
                 <div class="name">
-                    <h6>@matchEvent.Name</h6>
-                </div>               
-            
-                @if (matchEvent.GetProfitPercentage() > 0)
-                {
+                    <h6>{{name}}</h6>
+                </div>
+                {{#if_grt profitPercentage 0}}
                     <div class="profit green">
-                        <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b>
+                        <b>Profit: {{profitPercentage}} %</b>
                     </div>
-                }
-                else
-                {
+                {{else}}
                     <div class="profit red">
-                        <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b>
-                    </div>                    
-                }
+                        <b>Profit: {{profitPerecentage}} %</b>
+                    </div>
+                {{/if_grt}}
             </div>
             <div class="odds">
-                @foreach (Odd odd in matchEvent.Odds)
-                {
-                    <a href=@odd.UrlReference class="odd @odd.BettingShop">
-                        <div class="odd @odd.BettingShop">
-                            @odd.BettingShop: @odd.BettingOdd
-                        </div>                    
+                {{#each odds}}
+                    <a href="{{urlReference}}" class="odd {{bettingShop}}">
+                        <div class="odd {{bettingShop}}">
+                            {{bettingShop}}: {{bettingOdd}}
+                        </div>
                     </a>
-                }
+                {{/each}}
             </div>
         </div>
-    }
-</div>
+    {{/each}}
+</script>
+<script src="~/js/index.js"></script>
+

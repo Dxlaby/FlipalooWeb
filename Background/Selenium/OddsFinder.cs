@@ -5,6 +5,7 @@ using FlipalooWeb.DataStructure;
 using FlipalooWeb.Background.BettingOddsFinders;
 using OpenQA.Selenium.Edge;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium.Chrome;
 
 namespace FlipalooWeb.Background
@@ -22,51 +23,38 @@ namespace FlipalooWeb.Background
             
             var firefoxOptions = new FirefoxOptions();
             firefoxOptions.AddArgument("--headless");
-            // firefoxOptions.AddArgument("--disable-extensions"); // Disable browser extensions
-            // firefoxOptions.AddArgument("--disable-gpu"); // Disable GPU
-            // firefoxOptions.AddArgument("--disable-software-rasterizer"); // Disable software rasterizer
-            // firefoxOptions.AddArgument("--disable-web-security"); // Disable web security
-            // firefoxOptions.AddArgument("--blink-settings=imagesEnabled=false"); // Disable images
-            // firefoxOptions.AddArgument("--mute-audio");
+            firefoxOptions.AddArgument("-no-sandbox");
             firefoxOptions.AddArgument("--no-sandbox");
-            //
-            // FirefoxProfile profile = new FirefoxProfile();
-            // profile.SetPreference("browser.cache.disk.enable", false); // Disable disk cache
-            // profile.SetPreference("browser.cache.memory.enable", false); // Disable memory cache
-            // profile.SetPreference("browser.cache.offline.enable", false); // Disable offline cache
-            // firefoxOptions.Profile = profile;
-            //
-            //
-            //var profile = new FirefoxProfileManager();
-
+            
             ListOfMatches finalListOfMatches = new ListOfMatches();
             
             foreach (var matchFinder in matchFinders)
             {
-                var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600));
-                var listOfMatches = matchFinder.FindAllMatches(driver);
-                finalListOfMatches.Merge(listOfMatches);
-                driver.Quit();
+                using (var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600)))
+                {
+                    var listOfMatches = matchFinder.FindAllMatches(driver);
+                    driver.Quit();
+                    finalListOfMatches.Merge(listOfMatches);
+                }
             }
             
             List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
-            finalListOfEvents.Sort((a, b) => a.GetImpliedProbability().CompareTo(b.GetImpliedProbability()));
+            finalListOfEvents.Sort((a, b) => a.ImpliedProbability.CompareTo(b.ImpliedProbability));
             var listOfEvents = finalListOfEvents.Take(500);
             string json = JsonSerializer.Serialize<IEnumerable<Event>>(listOfEvents);
             File.WriteAllText(@"wwwroot/Data/BettingOdds.json", json);
             //https://stackoverflow.com/questions/16921652/how-to-write-a-json-file-in-c
         }
-
-        public List<Event> GetEvents()
+        
+        public List<Event> GetEvents(int page, int sizeOfPage)
         {
             string json = File.ReadAllText(@"wwwroot/Data/BettingOdds.json");
-            List<Event>? weatherForecast = JsonSerializer.Deserialize<List<Event>>(json);
-            if (weatherForecast != null)
-            {
-                return weatherForecast;
-            }
-            else
+            List<Event>? bettingOdds = JsonSerializer.Deserialize<List<Event>>(json);
+            if (bettingOdds == null)
                 return new List<Event>();
+        
+            List<Event> events =  bettingOdds.GetRange(sizeOfPage * (page), sizeOfPage);
+            return events;
         }
     }
 }
