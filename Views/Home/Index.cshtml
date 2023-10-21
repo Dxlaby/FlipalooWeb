@@ -15,42 +15,9 @@
 
 <div class="event-grid">
     
-    @* @foreach (Event matchEvent in matchEvents) *@
-    @* { *@
-    @*     <div class="event-preview"> *@
-    @*         <div class="information-row"> *@
-    @*             <div class="name"> *@
-    @*                 <h6>@matchEvent.Name</h6> *@
-    @*             </div> *@
-    @* *@
-    @*             @if (matchEvent.GetProfitPercentage() > 0) *@
-    @*             { *@
-    @*                 <div class="profit green"> *@
-    @*                     <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b> *@
-    @*                 </div> *@
-    @*             } *@
-    @*             else *@
-    @*             { *@
-    @*                 <div class="profit red"> *@
-    @*                     <b>Profit: @Math.Round(matchEvent.GetProfitPercentage(), 2).ToString() %</b> *@
-    @*                 </div> *@
-    @*             } *@
-    @*         </div> *@
-    @*         <div class="odds"> *@
-    @*             @foreach (Odd odd in matchEvent.Odds) *@
-    @*             { *@
-    @*                 <a href=@odd.UrlReference class="odd @odd.BettingShop"> *@
-    @*                     <div class="odd @odd.BettingShop"> *@
-    @*                         @odd.BettingShop: @odd.BettingOdd *@
-    @*                     </div> *@
-    @*                 </a> *@
-    @*             } *@
-    @*         </div> *@
-    @*     </div> *@
-    @* } *@
 </div>
 
-<button class="btn" style="background: white"> More </button>
+<p id="everything-loaded" class="everything-loaded">--- Všechny zápasy jdou vidět ---</p>
 
 <script src="js/handlebars.js"></script>
 <script>
@@ -75,7 +42,7 @@
                     </div>
                 {{else}}
                     <div class="profit red">
-                        <b>Profit: {{profitPerecentage}} %</b>
+                        <b>Profit: {{profitPercentage}} %</b>
                     </div>
                 {{/if_grt}}
             </div>

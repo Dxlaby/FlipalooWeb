@@ -46,15 +46,28 @@ namespace FlipalooWeb.Background
             //https://stackoverflow.com/questions/16921652/how-to-write-a-json-file-in-c
         }
         
-        public List<Event> GetEvents(int page, int sizeOfPage)
+        public List<Event>? GetEvents(int page, int sizeOfPage)
         {
             string json = File.ReadAllText(@"wwwroot/Data/BettingOdds.json");
             List<Event>? bettingOdds = JsonSerializer.Deserialize<List<Event>>(json);
             if (bettingOdds == null)
                 return new List<Event>();
-        
-            List<Event> events =  bettingOdds.GetRange(sizeOfPage * (page), sizeOfPage);
-            return events;
+            if (sizeOfPage * page <= bettingOdds.Count() - sizeOfPage)
+            {
+                List<Event> events = bettingOdds.GetRange(sizeOfPage * (page), sizeOfPage);
+                return events;
+            }
+            else if (sizeOfPage*page < bettingOdds.Count())
+            {
+                List<Event> events = bettingOdds.GetRange(sizeOfPage * (page), bettingOdds.Count - sizeOfPage * (page));
+                return events;
+            }
+            else
+            {
+                return null;
+            }
+            
+            
         }
     }
 }

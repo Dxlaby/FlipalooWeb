@@ -113,6 +113,6 @@ body {
 }
 
 .foot {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 10px;
 }
