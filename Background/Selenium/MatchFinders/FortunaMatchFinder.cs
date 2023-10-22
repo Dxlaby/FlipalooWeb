@@ -20,6 +20,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         By namesElementPath;
         By oddsElementPath;
         By referenceLinkElementPath;
+        By dateElementPath;
         public FortunaMatchFinder()
         {
             _bettingShopName = "Fortuna";
@@ -29,12 +30,13 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             namesElementPath = By.CssSelector(".market-name");
             oddsElementPath = By.CssSelector(".odds-value");
             referenceLinkElementPath = By.CssSelector(".event-link");
+            dateElementPath = By.CssSelector(".event-datetime");
         }
 
         public ListOfMatches FindAllMatches(IWebDriver driver)
         { 
             //initialize driver and stu
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
             driver.Navigate().GoToUrl(url);
             
             
@@ -103,7 +105,12 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             IWebElement matchNameElement = matchElement.FindElement(namesElementPath);
             string matchName = matchNameElement.Text;
             IWebElement referenceElement = matchElement.FindElement(referenceLinkElementPath);
-            string referenceUrl = referenceElement.GetAttribute("href"); 
+            string referenceUrl = referenceElement.GetAttribute("href");
+
+            IWebElement dateElement = matchElement.FindElement(dateElementPath);
+            DateTime dateTime = GetDate(dateElement.Text);
+            if ((dateTime - DateTime.Now).TotalHours < 2)
+                return null;
     
             var roughOdds = GetOddsFromElement(matchElement, referenceUrl);
             MatchOdds? sortedOdds = SortOdds(roughOdds);
@@ -113,9 +120,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             if (sortedOdds == null)
                 return null;
             else if (sortedOdds.Odds.Length == 2)
-                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1, 
+                    recognitionTeams.Item2, dateTime, sortedOdds);
             else if (sortedOdds.Odds.Length == 6)
-                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1, 
+                    recognitionTeams.Item2, dateTime, sortedOdds);
             else
                 return null;
         }
@@ -173,6 +182,19 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return new Tuple<string, string>(teamNames[0], "");
             }
                 
+        }
+
+        private DateTime GetDate(string dateText)
+        {
+            string[] dateAndTime = dateText.Split(" ");
+
+            string date = dateAndTime[0];
+            string time = dateAndTime[1];
+            
+            string[] dates = date.Split(".");
+            string[] times = time.Split(":", 2);
+            return new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
+                int.Parse(times[0]),int.Parse(times[1]), 0);
         }
         
         private string RemoveDiacritics(string text)

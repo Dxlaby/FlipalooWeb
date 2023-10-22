@@ -37,7 +37,7 @@ namespace FlipalooWeb.DataStructure
             }
         }
 
-        public List<Event> SplitToEvents(string name, string teamName1, string teamName2)
+        public List<Event> SplitToEvents(string name, string teamName1, string teamName2, DateTime date)
         {
             List<Event> events = new List<Event>();
 
@@ -53,7 +53,7 @@ namespace FlipalooWeb.DataStructure
                     float profitPercentage = GetProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, odds);
+                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
             }
@@ -71,7 +71,7 @@ namespace FlipalooWeb.DataStructure
                     float profitPercentage = GetProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, odds);                    
+                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);                    
                     events.Add(newEvent);
                 }
                 if (Odds[0] != null && Odds[4] != null)
@@ -84,7 +84,7 @@ namespace FlipalooWeb.DataStructure
                     float profitPercentage = GetProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, odds);                    
+                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);                    
                     events.Add(newEvent);
                 }
                 if (Odds[1] != null && Odds[5] != null)
@@ -97,7 +97,7 @@ namespace FlipalooWeb.DataStructure
                     float profitPercentage = GetProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, odds);
+                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
                 if (Odds[2] != null && Odds[3] != null)
@@ -110,7 +110,7 @@ namespace FlipalooWeb.DataStructure
                     float profitPercentage = GetProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, odds);
+                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
             }

@@ -28,6 +28,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         By checkBoxElementPath;
         By closePopUpButton;
         By referenceLinkElementPath;
+        By timeElementPath;
         //By gridElementPath;
 
         //string oddClassName;
@@ -71,19 +72,21 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             //oddClassName = "btnRate";
             //blockedOddClassName = "btnRate disabled";
             referenceLinkElementPath = By.CssSelector(".GTM-event-link");
+            timeElementPath = By.CssSelector(".tw-flex.tw-flex-row.tw-justify-start.tw-items-center.tw-text-xs.tw-leading-s.tw-text-n-48-slate.tw-flex-col-reverse.tw-justify-center");
         }
 
         public ListOfMatches FindAllMatches(IWebDriver driver)
         {
             List<string> regionUrls = new List<string>();
             ListOfMatches finalListOfMatches = new ListOfMatches();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
 
             driver.Navigate().GoToUrl("https://www.betano.cz/");
             Thread.Sleep(1000);
 
             foreach (string url in sportUrls)
             {
+                driver.Manage().Cookies.DeleteAllCookies();
                 driver.Navigate().GoToUrl(url);
                 try
                 {
@@ -115,6 +118,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             foreach (string regionUrl in regionUrls)
             {
+                driver.Manage().Cookies.DeleteAllCookies();
                 try
                 {
                     driver.Navigate().GoToUrl(regionUrl);
@@ -123,16 +127,15 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 {
                     continue;
                 }
-                ListOfMatches listOfMatches = FindMatches(driver);
+                ListOfMatches listOfMatches = FindMatches(driver, wait);
                 finalListOfMatches.AddListOfMatches(listOfMatches);
             }
 
             return finalListOfMatches;
         }
 
-        private ListOfMatches FindMatches(IWebDriver driver)
+        private ListOfMatches FindMatches(IWebDriver driver, WebDriverWait wait)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             try
             {
                 wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));
@@ -155,10 +158,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return listOfMatches;
         }
 
-        private ListOfMatches FindMatchesByUrl(IWebDriver driver, string url)
+        private ListOfMatches FindMatchesByUrl(IWebDriver driver, WebDriverWait wait, string url)
         {
+            driver.Manage().Cookies.DeleteAllCookies();
             driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             try
             {
                 wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));
@@ -187,7 +190,15 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             string matchName = matchNameElements.ElementAt(0).Text + " - " + matchNameElements.ElementAt(1).Text;
             IWebElement referenceElement = matchElement.FindElement(referenceLinkElementPath);
             string referenceUrl = referenceElement.GetAttribute("href");
-
+            
+            var timeElement = matchElement.FindElement(timeElementPath);
+            var timeElements = timeElement.FindElements(By.TagName("span"));
+            DateTime? dateTime = GetDate(timeElements.ElementAt(0).Text, timeElements.ElementAt(1).Text);
+            if (dateTime == null)
+                return null;
+            if ((dateTime.Value - DateTime.Now).TotalHours < 2)
+                return null;
+            
             Odd?[]? roughOdds = null;
             
             try
@@ -208,9 +219,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             if (sortedOdds == null)
                 return null;
             else if (sortedOdds.Odds.Length == 2)
-                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1, 
+                    recognitionTeams.Item2, dateTime.Value, sortedOdds);
             else if (sortedOdds.Odds.Length == 6)
-                return new Match(matchName, recognitionTeams.Item1, recognitionTeams.Item2, sortedOdds);
+                return new Match(matchName, recognitionTeams.Item1,
+                    recognitionTeams.Item2, dateTime.Value, sortedOdds);
             else
                 return null;
         }
@@ -280,6 +293,21 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             else
             {
                 return new Tuple<string, string>(teamNames[0], "");
+            }
+        }
+
+        private DateTime? GetDate(string date, string time) //not ideal to how try method here
+        {
+            string[] dates = date.Split(".", 2);
+            string[] times = time.Split(":", 2);
+            try
+            {
+                return new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
+                    int.Parse(times[0]), int.Parse(times[1]), 0);
+            }
+            catch
+            {
+                return null;
             }
         }
 

@@ -16,10 +16,9 @@ namespace FlipalooWeb.Background
         {
             List<IMatchFinder> matchFinders = new List<IMatchFinder>();
             
+            matchFinders.Add(new BetanoMatchFinder());
             matchFinders.Add(new TipsportMatchFinder());
             matchFinders.Add(new FortunaMatchFinder());
-            matchFinders.Add(new BetanoMatchFinder());
-            
             
             var firefoxOptions = new FirefoxOptions();
             firefoxOptions.AddArgument("--headless");
@@ -33,11 +32,12 @@ namespace FlipalooWeb.Background
                 using (var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600)))
                 {
                     var listOfMatches = matchFinder.FindAllMatches(driver);
-                    driver.Quit();
                     finalListOfMatches.Merge(listOfMatches);
+                    driver.Quit();
                 }
             }
             
+
             List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
             finalListOfEvents.Sort((a, b) => a.ImpliedProbability.CompareTo(b.ImpliedProbability));
             var listOfEvents = finalListOfEvents.Take(500);
@@ -52,17 +52,17 @@ namespace FlipalooWeb.Background
             List<Event>? bettingOdds = JsonSerializer.Deserialize<List<Event>>(json);
             if (bettingOdds == null)
                 return new List<Event>();
-            if (sizeOfPage * page <= bettingOdds.Count() - sizeOfPage)
+            if (sizeOfPage * page <= bettingOdds.Count() - sizeOfPage) 
             {
                 List<Event> events = bettingOdds.GetRange(sizeOfPage * (page), sizeOfPage);
                 return events;
             }
-            else if (sizeOfPage*page < bettingOdds.Count())
+            else if (sizeOfPage*page < bettingOdds.Count()) //returns rest of matches, when there are remaining less that pageSize
             {
                 List<Event> events = bettingOdds.GetRange(sizeOfPage * (page), bettingOdds.Count - sizeOfPage * (page));
                 return events;
             }
-            else
+            else //return null when page is too big
             {
                 return null;
             }

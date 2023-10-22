@@ -5,19 +5,22 @@
         public string Name { get; set; }
         public string RecognitionTeamName1 { get; set; }
         public string RecognitionTeamName2 { get; set; }
+        public DateTime Date { get; set; }
         public MatchOdds Odds { get; set; }
-        public Match (string name, string recognitionTeamName1, string recognitionTeamName2, Odd?[] odds)
+        public Match (string name, string recognitionTeamName1, string recognitionTeamName2, DateTime date, Odd?[] odds)
         {
             Name = name;
             RecognitionTeamName1 = NormalizeString(recognitionTeamName1);
             RecognitionTeamName2 = NormalizeString(recognitionTeamName2);
+            Date = date;
             Odds = new MatchOdds(odds);
         }
-        public Match(string name, string recognitionTeamName1, string recognitionTeamName2, MatchOdds matchOdds)
+        public Match(string name, string recognitionTeamName1, string recognitionTeamName2, DateTime date, MatchOdds matchOdds)
         {
             Name = name;
             RecognitionTeamName1 = NormalizeString(recognitionTeamName1);
             RecognitionTeamName2 = NormalizeString(recognitionTeamName2);
+            Date = date;
             Odds = matchOdds;
         }
 
@@ -28,7 +31,7 @@
 
         public List<Event> SplitToEvents()
         {
-            List<Event> events = Odds.SplitToEvents(Name, RecognitionTeamName1, RecognitionTeamName2);
+            List<Event> events = Odds.SplitToEvents(Name, RecognitionTeamName1, RecognitionTeamName2, Date);
             return new List<Event>(events);
         }
 
@@ -38,7 +41,8 @@
                 || otherMatch.RecognitionTeamName1.Contains(RecognitionTeamName1))
                 && (RecognitionTeamName2.Contains(otherMatch.RecognitionTeamName2) 
                 || otherMatch.RecognitionTeamName2.Contains(RecognitionTeamName2))
-                && (Odds.Odds.Length == otherMatch.Odds.Odds.Length))
+                && (Odds.Odds.Length == otherMatch.Odds.Odds.Length)
+                && (Date.Date == otherMatch.Date.Date))
             {
                 return true;
             }

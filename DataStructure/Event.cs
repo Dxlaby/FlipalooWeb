@@ -13,17 +13,20 @@ namespace FlipalooWeb.DataStructure
         public string RecognitionTeamName2 { get; set; }
         public float ImpliedProbability { get; set; }
         public float ProfitPercentage { get; set; }
+        public string Date { get; set; }
         public List<Odd> Odds { get; set; }
         //public string UrlReference { get; set; }
 
-        public Event(string name, string recognitionTeamName1, string recognitionTeamName2, float impliedProbability, float profitPercentage, List<Odd> odds)
+        public Event(string name, string recognitionTeamName1, string recognitionTeamName2, 
+            float impliedProbability, float profitPercentage, string date, List<Odd> odds)
         {
             Name = name;
             RecognitionTeamName1 = recognitionTeamName1;
             RecognitionTeamName2 = recognitionTeamName2;
             ImpliedProbability = impliedProbability;
             ProfitPercentage = profitPercentage;
-            Odds = odds;            
+            Date = date;
+            Odds = odds;      
         }
 
         // public float GetImpliedProbability()
