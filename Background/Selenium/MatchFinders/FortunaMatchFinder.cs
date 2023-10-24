@@ -193,8 +193,13 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             string[] dates = date.Split(".");
             string[] times = time.Split(":", 2);
-            return new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
+            DateTime dateYearNow = new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
                 int.Parse(times[0]),int.Parse(times[1]), 0);
+            DateTime dateYearLater = new DateTime(DateTime.Now.Year + 1, int.Parse(dates[1]), int.Parse(dates[0]),
+                int.Parse(times[0]),int.Parse(times[1]), 0);
+            if (dateYearNow > DateTime.Now)
+                return dateYearNow;
+            return dateYearLater;
         }
         
         private string RemoveDiacritics(string text)
