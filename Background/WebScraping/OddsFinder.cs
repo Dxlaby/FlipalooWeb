@@ -19,24 +19,21 @@ namespace FlipalooWeb.Background
             matchFinders.Add(new BetanoMatchFinder());
             matchFinders.Add(new TipsportMatchFinder());
             matchFinders.Add(new FortunaMatchFinder());
-            
+
+            string geckoDriverDirectory = @"wwwroot/Drivers";
             var firefoxOptions = new FirefoxOptions();
             firefoxOptions.AddArgument("--headless");
             firefoxOptions.AddArgument("-no-sandbox");
             firefoxOptions.AddArgument("--no-sandbox");
+            TimeSpan commandTimeOut = TimeSpan.FromSeconds(600);
             
             ListOfMatches finalListOfMatches = new ListOfMatches();
             
             foreach (var matchFinder in matchFinders)
             {
-                using (var driver = new FirefoxDriver(@"wwwroot/Drivers", firefoxOptions, TimeSpan.FromSeconds(600)))
-                {
-                    var listOfMatches = matchFinder.FindAllMatches(driver);
-                    finalListOfMatches.Merge(listOfMatches);
-                    driver.Quit();
-                }
+                var listOfMatches = matchFinder.FindAllMatches(geckoDriverDirectory, firefoxOptions, commandTimeOut);
+                finalListOfMatches.Merge(listOfMatches);
             }
-            
 
             List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
             finalListOfEvents.Sort((a, b) => a.ImpliedProbability.CompareTo(b.ImpliedProbability));

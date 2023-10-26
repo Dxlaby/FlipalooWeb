@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using FlipalooWeb.DataStructure;
+using OpenQA.Selenium.Firefox;
 
 
 namespace FlipalooWeb.Background.BettingOddsFinders
@@ -40,17 +41,22 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             blockedOddClassName = "btnRate disabled";
         }
 
-        public ListOfMatches FindAllMatches(IWebDriver driver)
+        public ListOfMatches FindAllMatches(string geckoDriverDirectory, FirefoxOptions options, TimeSpan commandTimeOut)
         {
-            ListOfMatches listOfMatches = FindMatchesByUrl(driver, urlAll);
+            ListOfMatches listOfMatches = new ListOfMatches();
+            using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
+            {
+                listOfMatches.AddListOfMatches(FindMatchesByUrl(driver, urlAll));
+            }
+
             return listOfMatches;
         }
 
-        public ListOfMatches FindTomorrowMatches(IWebDriver driver)
-        {
-            ListOfMatches listOfMatches = FindMatchesByUrl(driver, urlTomorrow);
-            return listOfMatches;
-        }
+        // public ListOfMatches FindTomorrowMatches(IWebDriver driver)
+        // {
+        //     ListOfMatches listOfMatches = FindMatchesByUrl(driver, urlTomorrow);
+        //     return listOfMatches;
+        // }
 
         private ListOfMatches FindMatchesByUrl(IWebDriver driver, string url)
         {

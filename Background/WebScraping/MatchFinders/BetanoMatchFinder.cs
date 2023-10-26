@@ -9,26 +9,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using FlipalooWeb.DataStructure;
+using OpenQA.Selenium.Firefox;
+using HtmlAgilityPack;
 
 namespace FlipalooWeb.Background.BettingOddsFinders
 {
     internal class BetanoMatchFinder : IMatchFinder
     {
-        string bettingShopName;
-        List<string> sportUrls;
-        By matchElementPath;
-        By namesElementPath;
-        By nameElementPath;
-        By oddsElementPath;
-        By oddElementPath;
-        By showButtonElementPath;
+        private readonly string _bettingShopName;
+        private readonly List<string> _sportUrls;
+        private readonly string _matchElementPath;
+        private readonly string _namesElementPath;
+        private readonly string _nameElementPath;
+        private readonly string _oddsElementPath;
+        private readonly string _oddElementPath;
+        private readonly string _showButtonElementPath;
         //By sportBoxElementPath;
-        By regionBoxElementPath;
-        By regionNameElementPath;
-        By checkBoxElementPath;
-        By closePopUpButton;
-        By referenceLinkElementPath;
-        By timeElementPath;
+        private readonly string _regionBoxElementPath;
+        private readonly string _regionNameElementPath;
+        private readonly string _checkBoxElementPath;
+        private readonly string _closePopUpButton;
+        private readonly string _referenceLinkElementPath;
+        private readonly string _timeElementPath;
         //By gridElementPath;
 
         //string oddClassName;
@@ -36,8 +38,8 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         public BetanoMatchFinder()
         {
-            bettingShopName = "Betano";
-            sportUrls = new List<string> 
+            _bettingShopName = "Betano";
+            _sportUrls = new List<string> 
             { 
                 "https://www.betano.cz/sport/fotbal/", 
                 "https://www.betano.cz/sport/ledni-hokej/",
@@ -56,99 +58,118 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 "https://www.betano.cz/sport/box/", 
                 "https://www.betano.cz/sport/rugby-union/"
             };
-            matchElementPath = By.CssSelector(".events-list__grid__event");
-            namesElementPath = By.CssSelector(".events-list__grid__info__main__participants");
-            nameElementPath = By.CssSelector(".events-list__grid__info__main__participants__participant-name");
-            oddsElementPath = By.CssSelector(".selections");
-            oddElementPath = By.CssSelector(".selections__selection__odd");
-            showButtonElementPath = By.CssSelector(".tw-bg-n-17-black-pearl");
+            _matchElementPath = ".//*[@class='" + "events-list__grid__event" + "']";
+            _namesElementPath = ".//*[@class='" + "events-list__grid__info__main__participants" + "']";
+            _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name  tw-truncate" + "']";
+            _oddsElementPath = ".//*[@class='" + "selections" + "']";
+            _oddElementPath = ".//*[@class='" + "selections__selection__odd" + "']";
+            _showButtonElementPath = ".//*[@class='" + "tw-bg-n-17-black-pearl" + "']";
             //sportBoxElementPath = By.CssSelector(".sport-block__item");
-            regionBoxElementPath = By.CssSelector(".tw-flex.tw-flex-col.tw-pb-m.tw-pt-n.tw-bg-white-snow");
-            regionNameElementPath = By.CssSelector("div.tw-flex.tw-justify-center.tw-items-center a");
-            checkBoxElementPath = By.CssSelector(".tw-inline-flex");
-            closePopUpButton = By.CssSelector(".sb-modal__close__btn");
+            _regionBoxElementPath = ".//*[@class='" + "tw-flex tw-flex-col tw-pb-m tw-pt-n tw-bg-white-snow" + "']";
+            _regionNameElementPath = ".//*[@class='" + "tw-pl-[4px] tw-text-s tw-leading-s tw-text-n-13-steel tw-no-underline hover:tw-font-bold tw-line-clamp-1" + "']";
+            _checkBoxElementPath = ".//*[@class='" + "tw-inline-flex" + "']";
+            _closePopUpButton = ".//*[@class='" + "sb-modal__close__btn" + "']";
             //gridElementPath = By.CssSelector(".grid__column");
 
             //oddClassName = "btnRate";
             //blockedOddClassName = "btnRate disabled";
-            referenceLinkElementPath = By.CssSelector(".GTM-event-link");
-            timeElementPath = By.CssSelector(".tw-flex.tw-flex-row.tw-justify-start.tw-items-center.tw-text-xs.tw-leading-s.tw-text-n-48-slate.tw-flex-col-reverse.tw-justify-center");
+            _referenceLinkElementPath = ".//*[@class='" + "GTM-event-link events-list__grid__info__main" + "']";
+            _timeElementPath = ".//*[@class='" + "tw-flex tw-flex-row tw-justify-start tw-items-center tw-text-xs tw-leading-s tw-text-n-48-slate tw-flex-col-reverse tw-justify-center"
+                                              + "']";
         }
 
-        public ListOfMatches FindAllMatches(IWebDriver driver)
+        public ListOfMatches FindAllMatches(string geckoDriverDirectory, FirefoxOptions options, TimeSpan commandTimeOut) //
         {
+            HtmlWeb web = new HtmlWeb();
+            
             List<string> regionUrls = new List<string>();
             ListOfMatches finalListOfMatches = new ListOfMatches();
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
-
-            driver.Navigate().GoToUrl("https://www.betano.cz/");
-            Thread.Sleep(1000);
-
-            foreach (string url in sportUrls)
+            //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+            
+            //driver.Navigate().GoToUrl("https://www.betano.cz/");
+            //Thread.Sleep(1000);
+            
+            foreach (string url in _sportUrls)
             {
-                driver.Manage().Cookies.DeleteAllCookies();
-                driver.Navigate().GoToUrl(url);
-                try
+                // driver.Manage().Cookies.DeleteAllCookies();
+                // driver.Navigate().GoToUrl(url);
+                // try
+                // {
+                //     wait.Until(ExpectedConditions.ElementIsVisible(regionNameElementPath));
+                // }
+                // catch
+                // {
+                //     continue;
+                // }
+                //
+                // try
+                // {
+                //     driver.FindElement(closePopUpButton).Click();
+                // }
+                // catch
+                // {
+                //
+                // }
+                var sportHtml = new HtmlDocument();
+                using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
                 {
-                    wait.Until(ExpectedConditions.ElementIsVisible(regionNameElementPath));
-                }
-                catch
-                {
-                    continue;
+                    driver.Navigate().GoToUrl(url);
+                    var sportContent = driver.PageSource;
+                    sportHtml.LoadHtml(sportContent);
+                    driver.Quit();
                 }
                 
-                try
-                {
-                    driver.FindElement(closePopUpButton).Click();
-                }
-                catch
-                {
-
-                }
-
-                var regionNameElements = driver.FindElements(regionNameElementPath);
-
+                // Console.WriteLine(sportContent);
+                // Console.WriteLine("\n\n\n\n\n\n");
+                // Console.WriteLine(sportHtml);
+                var regionNameElements = sportHtml.DocumentNode.SelectNodes(_regionNameElementPath);
+            
                 foreach (var regionName in regionNameElements)
                 {
-                    string regionUrl = regionName.GetAttribute("href");
-                    regionUrls.Add(regionUrl);
+                    if (regionName == null)
+                        continue;
+                    string regionUrl = "https://betano.cz" + regionName.Attributes["href"].Value;
+                    regionUrls.Add(regionUrl); 
                 }
                 
             }
-
+            
             foreach (string regionUrl in regionUrls)
             {
-                driver.Manage().Cookies.DeleteAllCookies();
-                try
+                var regionUrlHtml = new HtmlDocument();
+               
+                using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
                 {
                     driver.Navigate().GoToUrl(regionUrl);
+                    var regionUrlContent = driver.PageSource;
+                    regionUrlHtml.LoadHtml(regionUrlContent);
+                    driver.Quit();
                 }
-                catch
-                {
-                    continue;
-                }
-                ListOfMatches listOfMatches = FindMatches(driver, wait);
+                
+                ListOfMatches listOfMatches = FindMatches(regionUrlHtml);
                 finalListOfMatches.AddListOfMatches(listOfMatches);
             }
-
+            
             return finalListOfMatches;
         }
 
-        private ListOfMatches FindMatches(IWebDriver driver, WebDriverWait wait)
+        private ListOfMatches FindMatches(HtmlDocument htmlDocument)
         {
-            try
-            {
-                wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));
-            }
-            catch
-            {
-                return new ListOfMatches();
-            }
+            // try
+            // {
+            //     wait.Until(ExpectedConditions.ElementIsVisible(_oddElementPath));
+            // }
+            // catch
+            // {
+            //     return new ListOfMatches();
+            // }
 
-            IReadOnlyCollection<IWebElement>? matchesElements = driver.FindElements(matchElementPath);
+            var matchesElements = htmlDocument.DocumentNode.SelectNodes(_matchElementPath);
+            if (matchesElements == null)
+                return new ListOfMatches();
             ListOfMatches listOfMatches = new ListOfMatches();
 
-            foreach (IWebElement matchElement in matchesElements)
+            foreach (var matchElement in matchesElements)
             {
                 Match? match = GetMatchFromElement(matchElement);
                 if (match != null)
@@ -158,42 +179,42 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return listOfMatches;
         }
 
-        private ListOfMatches FindMatchesByUrl(IWebDriver driver, WebDriverWait wait, string url)
+        // private ListOfMatches FindMatchesByUrl(IWebDriver driver, WebDriverWait wait, string url)
+        // {
+        //     driver.Manage().Cookies.DeleteAllCookies();
+        //     driver.Navigate().GoToUrl(url);
+        //     try
+        //     {
+        //         wait.Until(ExpectedConditions.ElementIsVisible(_oddElementPath));
+        //     }
+        //     catch
+        //     {
+        //         return new ListOfMatches();
+        //     }
+        //
+        //     IReadOnlyCollection<IWebElement>? matchesElements = driver.FindElements(_matchElementPath);
+        //     ListOfMatches listOfMatches = new ListOfMatches();
+        //
+        //     foreach (IWebElement matchElement in matchesElements)
+        //     {
+        //         Match? match = GetMatchFromElement(matchElement);
+        //         if (match != null)
+        //             listOfMatches.Matches.Add(match);
+        //     }
+        //
+        //     return listOfMatches;
+        // }
+
+        private Match? GetMatchFromElement(HtmlNode matchElement)
         {
-            driver.Manage().Cookies.DeleteAllCookies();
-            driver.Navigate().GoToUrl(url);
-            try
-            {
-                wait.Until(ExpectedConditions.ElementIsVisible(oddElementPath));
-            }
-            catch
-            {
-                return new ListOfMatches();
-            }
-
-            IReadOnlyCollection<IWebElement>? matchesElements = driver.FindElements(matchElementPath);
-            ListOfMatches listOfMatches = new ListOfMatches();
-
-            foreach (IWebElement matchElement in matchesElements)
-            {
-                Match? match = GetMatchFromElement(matchElement);
-                if (match != null)
-                    listOfMatches.Matches.Add(match);
-            }
-
-            return listOfMatches;
-        }
-
-        private Match? GetMatchFromElement(IWebElement matchElement)
-        {
-            var matchNameElements = matchElement.FindElements(nameElementPath);
-            string matchName = matchNameElements.ElementAt(0).Text + " - " + matchNameElements.ElementAt(1).Text;
-            IWebElement referenceElement = matchElement.FindElement(referenceLinkElementPath);
-            string referenceUrl = referenceElement.GetAttribute("href");
+            var matchNameElements = matchElement.SelectNodes(_nameElementPath);
+            string matchName = matchNameElements.ElementAt(0).InnerText + " - " + matchNameElements.ElementAt(1).InnerText;
+            var referenceElement = matchElement.SelectSingleNode(_referenceLinkElementPath);
+            string referenceUrl = "https://betano.cz" + referenceElement.Attributes["href"].Value;
             
-            var timeElement = matchElement.FindElement(timeElementPath);
-            var timeElements = timeElement.FindElements(By.TagName("span"));
-            DateTime? dateTime = GetDate(timeElements.ElementAt(0).Text, timeElements.ElementAt(1).Text);
+            var timeElement = matchElement.SelectSingleNode(_timeElementPath);
+            var timeElements = timeElement.SelectNodes(".//span");
+            DateTime? dateTime = GetDate(timeElements.ElementAt(0).InnerText, timeElements.ElementAt(1).InnerText);
             if (dateTime == null)
                 return null;
             if ((dateTime.Value - DateTime.Now).TotalHours < 2)
@@ -203,7 +224,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             try
             {
-                var oddsElement = matchElement.FindElement(oddsElementPath);
+                var oddsElement = matchElement.SelectSingleNode(_oddsElementPath);
                 roughOdds = GetOddsFromElement(oddsElement, referenceUrl);
             }
             catch
@@ -228,12 +249,12 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return null;
         }
 
-        private Odd?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
+        private Odd?[] GetOddsFromElement(HtmlNode oddsElement, string referenceUrl)
         {
-            var oddElements = oddsElement.FindElements(oddElementPath);
+            var oddElements = oddsElement.SelectNodes(_oddElementPath);
             List<Odd?> oddsList = new List<Odd?>();
 
-            foreach (IWebElement oddElement in oddElements)
+            foreach (var oddElement in oddElements)
             {
                 var odd = GetOddFromElement(oddElement, referenceUrl);
                 oddsList.Add(odd);
@@ -242,13 +263,13 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return oddsList.ToArray();
         }
 
-        private Odd? GetOddFromElement(IWebElement element, string referenceUrl)
+        private Odd? GetOddFromElement(HtmlNode element, string referenceUrl)
         {
-            float? odd = float.Parse(element.Text.Replace(" ", ""), CultureInfo.InvariantCulture.NumberFormat);
+            float? odd = float.Parse(element.InnerText.Replace(" ", ""), CultureInfo.InvariantCulture.NumberFormat);
             if (odd == null)
                 return null;
             else
-                return new Odd(bettingShopName, referenceUrl, odd.Value);
+                return new Odd(_bettingShopName, referenceUrl, odd.Value);
         }
 
         private MatchOdds SortOdds(Odd?[] roughOdds)

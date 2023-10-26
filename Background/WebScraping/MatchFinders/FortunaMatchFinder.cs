@@ -8,6 +8,7 @@ using FlipalooWeb.DataStructure;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using OpenQA.Selenium.Firefox;
 
 namespace FlipalooWeb.Background.BettingOddsFinders
 {
@@ -33,29 +34,32 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             dateElementPath = By.CssSelector(".event-datetime");
         }
 
-        public ListOfMatches FindAllMatches(IWebDriver driver)
+        public ListOfMatches FindAllMatches(string geckoDriverDirectory, FirefoxOptions options, TimeSpan commandTimeOut)
         { 
             //initialize driver and stu
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
-            driver.Navigate().GoToUrl(url);
+            using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
+            {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+                driver.Navigate().GoToUrl(url);
             
             
-            //click on cookie button
-            try
-            {
-                wait.Until(ExpectedConditions.ElementIsVisible(cookieButtonElementPath));
-                IWebElement buttonConsent = driver.FindElement(cookieButtonElementPath);
-                buttonConsent.Click();
-            }
-            catch
-            {
+                //click on cookie button
+                try
+                {
+                    wait.Until(ExpectedConditions.ElementIsVisible(cookieButtonElementPath));
+                    IWebElement buttonConsent = driver.FindElement(cookieButtonElementPath);
+                    buttonConsent.Click();
+                }
+                catch
+                {
                 
-            }
+                }
 
-            ScrollDown(driver, wait);
+                ScrollDown(driver, wait);
             
-            //finally find and save all macthes odds
-            return FindListOfMatches(driver);
+                //finally find and save all macthes odds
+                return FindListOfMatches(driver);
+            }
         }
 
         public void ScrollDown(IWebDriver driver, WebDriverWait wait)
