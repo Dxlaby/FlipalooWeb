@@ -61,7 +61,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             _matchElementPath = ".//*[@class='" + "events-list__grid__event" + "']";
             _namesElementPath = ".//*[@class='" + "events-list__grid__info__main__participants" + "']";
             _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name  tw-truncate" + "']";
-            _oddsElementPath = ".//*[@class='" + "selections" + "']";
+            _oddsElementPath = ".//*[@class='" + "table__markets__market" + "']";
             _oddElementPath = ".//*[@class='" + "selections__selection__odd" + "']";
             _showButtonElementPath = ".//*[@class='" + "tw-bg-n-17-black-pearl" + "']";
             //sportBoxElementPath = By.CssSelector(".sport-block__item");
