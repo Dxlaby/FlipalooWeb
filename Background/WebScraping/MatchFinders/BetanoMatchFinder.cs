@@ -60,7 +60,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             };
             _matchElementPath = ".//*[@class='" + "events-list__grid__event" + "']";
             _namesElementPath = ".//*[@class='" + "events-list__grid__info__main__participants" + "']";
-            _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name  tw-truncate" + "']";
+            _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name tw-truncate" + "']";
             _oddsElementPath = ".//*[@class='" + "table__markets__market" + "']";
             _oddElementPath = ".//*[@class='" + "selections__selection__odd" + "']";
             _showButtonElementPath = ".//*[@class='" + "tw-bg-n-17-black-pearl" + "']";
@@ -73,8 +73,8 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             //oddClassName = "btnRate";
             //blockedOddClassName = "btnRate disabled";
-            _referenceLinkElementPath = ".//*[@class='" + "GTM-event-link events-list__grid__info__main" + "']";
-            _timeElementPath = ".//*[@class='" + "tw-flex tw-flex-row tw-justify-start tw-items-center tw-text-xs tw-leading-s tw-text-n-48-slate tw-flex-col-reverse tw-justify-center"
+            _referenceLinkElementPath = ".//*[@class='" + "GTM-event-link events-list__grid__info__main tw-no-underline" + "']";
+            _timeElementPath = ".//*[@class='" + "tw-flex tw-flex-row tw-justify-start tw-items-center tw-text-xs tw-leading-s tw-flex-col-reverse tw-justify-center tw-text-n-48-slate"
                                               + "']";
         }
 
@@ -84,32 +84,9 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             List<string> regionUrls = new List<string>();
             ListOfMatches finalListOfMatches = new ListOfMatches();
-            //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
-            
-            //driver.Navigate().GoToUrl("https://www.betano.cz/");
-            //Thread.Sleep(1000);
             
             foreach (string url in _sportUrls)
             {
-                // driver.Manage().Cookies.DeleteAllCookies();
-                // driver.Navigate().GoToUrl(url);
-                // try
-                // {
-                //     wait.Until(ExpectedConditions.ElementIsVisible(regionNameElementPath));
-                // }
-                // catch
-                // {
-                //     continue;
-                // }
-                //
-                // try
-                // {
-                //     driver.FindElement(closePopUpButton).Click();
-                // }
-                // catch
-                // {
-                //
-                // }
                 var sportHtml = new HtmlDocument();
                 using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
                 {
@@ -119,11 +96,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                     driver.Quit();
                 }
                 
-                // Console.WriteLine(sportContent);
-                // Console.WriteLine("\n\n\n\n\n\n");
-                // Console.WriteLine(sportHtml);
                 var regionNameElements = sportHtml.DocumentNode.SelectNodes(_regionNameElementPath);
-            
+                
+                if (regionNameElements == null)
+                    continue;
+                
                 foreach (var regionName in regionNameElements)
                 {
                     if (regionName == null)
@@ -155,20 +132,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
         private ListOfMatches FindMatches(HtmlDocument htmlDocument)
         {
-            // try
-            // {
-            //     wait.Until(ExpectedConditions.ElementIsVisible(_oddElementPath));
-            // }
-            // catch
-            // {
-            //     return new ListOfMatches();
-            // }
-
             var matchesElements = htmlDocument.DocumentNode.SelectNodes(_matchElementPath);
             if (matchesElements == null)
                 return new ListOfMatches();
             ListOfMatches listOfMatches = new ListOfMatches();
-
+            
             foreach (var matchElement in matchesElements)
             {
                 Match? match = GetMatchFromElement(matchElement);
@@ -179,35 +147,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return listOfMatches;
         }
 
-        // private ListOfMatches FindMatchesByUrl(IWebDriver driver, WebDriverWait wait, string url)
-        // {
-        //     driver.Manage().Cookies.DeleteAllCookies();
-        //     driver.Navigate().GoToUrl(url);
-        //     try
-        //     {
-        //         wait.Until(ExpectedConditions.ElementIsVisible(_oddElementPath));
-        //     }
-        //     catch
-        //     {
-        //         return new ListOfMatches();
-        //     }
-        //
-        //     IReadOnlyCollection<IWebElement>? matchesElements = driver.FindElements(_matchElementPath);
-        //     ListOfMatches listOfMatches = new ListOfMatches();
-        //
-        //     foreach (IWebElement matchElement in matchesElements)
-        //     {
-        //         Match? match = GetMatchFromElement(matchElement);
-        //         if (match != null)
-        //             listOfMatches.Matches.Add(match);
-        //     }
-        //
-        //     return listOfMatches;
-        // }
-
         private Match? GetMatchFromElement(HtmlNode matchElement)
         {
             var matchNameElements = matchElement.SelectNodes(_nameElementPath);
+            if (matchNameElements == null || matchNameElements.Count < 2)
+                return null;
             string matchName = matchNameElements.ElementAt(0).InnerText + " - " + matchNameElements.ElementAt(1).InnerText;
             var referenceElement = matchElement.SelectSingleNode(_referenceLinkElementPath);
             string referenceUrl = "https://betano.cz" + referenceElement.Attributes["href"].Value;
@@ -222,16 +166,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             Odd?[]? roughOdds = null;
             
-            try
-            {
-                var oddsElement = matchElement.SelectSingleNode(_oddsElementPath);
-                roughOdds = GetOddsFromElement(oddsElement, referenceUrl);
-            }
-            catch
-            {
-               return null;
-            }
-            
+            var oddsElement = matchElement.SelectSingleNode(_oddsElementPath);
+            if (oddsElement == null)
+                return null;
+            roughOdds = GetOddsFromElement(oddsElement, referenceUrl);
             
             var sortedOdds = SortOdds(roughOdds);
 
@@ -249,11 +187,23 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return null;
         }
 
-        private Odd?[] GetOddsFromElement(HtmlNode oddsElement, string referenceUrl)
+        private Odd?[]? GetOddsFromElement(HtmlNode oddsElement, string referenceUrl)
         {
-            var oddElements = oddsElement.SelectNodes(_oddElementPath);
+            var oddElements = new HtmlNodeCollection(oddsElement);
+            try
+            {
+                oddElements = oddsElement.SelectNodes(_oddElementPath);
+            }
+            catch
+            {
+                return null;
+            }
+            
             List<Odd?> oddsList = new List<Odd?>();
-
+            
+            if (oddElements == null)
+                return oddsList.ToArray();
+            
             foreach (var oddElement in oddElements)
             {
                 var odd = GetOddFromElement(oddElement, referenceUrl);
@@ -268,11 +218,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             float? odd = float.Parse(element.InnerText.Replace(" ", ""), CultureInfo.InvariantCulture.NumberFormat);
             if (odd == null)
                 return null;
-            else
-                return new Odd(_bettingShopName, referenceUrl, odd.Value);
+            return new Odd(_bettingShopName, referenceUrl, odd.Value);
         }
 
-        private MatchOdds SortOdds(Odd?[] roughOdds)
+        private MatchOdds? SortOdds(Odd?[] roughOdds)
         {
 
             if (roughOdds.Count() == 2)
@@ -296,8 +245,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
             else
             {
-                Odd?[] finalOdds = { null, null };
-                return new MatchOdds(finalOdds);
+                return null;
             }
         }
 
