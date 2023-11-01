@@ -69,9 +69,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             while (true)
             {
                 var previousMatchesNames = driver.FindElements(By.CssSelector(".event-name"));
+                //var bottomElement = driver.FindElement(By.CssSelector(".button.button-yellow"));
                 // var BottomElement = driver.FindElement(By.ClassName("message-box-message"));
-                // jse.ExecuteScript("arguments[0].scrollIntoView(true)", BottomElement);
-                jse.ExecuteScript("window.scrollBy(0,document.body.scrollHeight-100)");
+                //jse.ExecuteScript("arguments[0].scrollIntoView(true)", bottomElement);
+                jse.ExecuteScript("window.scrollTo(0,document.body.scrollHeight - 1000)");
+
                 try
                 {
                     wait.Until(d => d.FindElements(By.CssSelector(".event-name")).Count > previousMatchesNames.Count);
