@@ -26,10 +26,13 @@
 </script>
 <script id="events-template" type="text/x-handlebars-template">
     {{#each this}}
+        
         <div class="event-preview">
             <div class="information-row">
                 <div class="name">
-                    <h6>{{name}}</h6>
+                    <a class="link" href="/Home/Counter/{{@@index}}" >
+                        <h6>{{name}}</h6>
+                    </a>
                 </div>
                 {{#if_grt profitPercentage 0}}
                     <div class="profit green">
@@ -50,7 +53,7 @@
                     </a>
                 {{/each}}
             </div>
-        </div>
+        </div>  
     {{/each}}
 </script>
 <script src="~/js/index.js"></script>

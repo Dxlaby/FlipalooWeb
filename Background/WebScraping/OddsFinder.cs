@@ -63,8 +63,17 @@ namespace FlipalooWeb.Background
             {
                 return null;
             }
-            
-            
+        }
+
+        public Event? GetEventByIndex(int index)
+        {
+            string json = File.ReadAllText(@"wwwroot/Data/BettingOdds.json");
+            List<Event>? bettingOdds = JsonSerializer.Deserialize<List<Event>>(json);
+            if (bettingOdds == null)
+                return null;
+            if (bettingOdds.Count < index || index < 0)
+                return null;
+            return bettingOdds[index];
         }
     }
 }

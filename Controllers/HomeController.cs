@@ -5,6 +5,7 @@ using FlipalooWeb.Background;
 using FlipalooWeb.DataStructure;
 using System.Text.Json;
 using FlipalooWeb.Background.BettingOddsFinders;
+using FlipalooWeb.Background;
 using System.IO;
 
 namespace FlipalooWeb.Controllers
@@ -26,6 +27,15 @@ namespace FlipalooWeb.Controllers
         public IActionResult AboutUs()
         {
             return View();
+        }
+
+        public IActionResult Counter(int index)
+        {
+            OddsFinder oddsFinder = new OddsFinder();
+            Event? myEvent = oddsFinder.GetEventByIndex(index);
+            if (myEvent == null)
+                return null;
+            return View(myEvent);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,0 +1,21 @@
+@using FlipalooWeb.DataStructure
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Event
+
+<link rel="stylesheet" href="~/css/index.css" />
+
+@using (Html.BeginForm("Counter", "Home", FormMethod.Post))
+{
+    <p>@Model.Name</p>
+    @foreach (Odd odd in Model.Odds)
+    {
+        <a href="{{urlReference}}" class="odd {{bettingShop}}">
+            <div class="odd @odd.BettingShop">
+                @odd.BettingShop : @odd.BettingOdd
+            </div>
+        </a>
+    }
+    <input/>
+}

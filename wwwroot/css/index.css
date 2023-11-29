@@ -49,7 +49,6 @@
 .name {
     display: inline-block;
     max-width: 65%;
-
 }
 
 .profit {
@@ -100,4 +99,13 @@
     color: white;
     text-align: center
     
+}
+
+.link {
+    color: white;
+    text-decoration: none;
+}
+
+.link:hover{
+    color: rgb(128, 128, 128);
 }

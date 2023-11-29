@@ -25,7 +25,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         public FortunaMatchFinder()
         {
             _bettingShopName = "Fortuna";
-            url = "https://www.ifortuna.cz/sazeni?selectDates=1#";
+            url = "https://www.ifortuna.cz/sazeni?selectDates=1";//"https://www.ifortuna.cz/sazeni/fotbal";//
             cookieButtonElementPath = By.Id("cookie-consent-button-accept");
             matchesElementPath = By.TagName("tr");
             namesElementPath = By.CssSelector(".market-name");
@@ -39,7 +39,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             //initialize driver and stu
             using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
             {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
                 driver.Navigate().GoToUrl(url);
             
             
@@ -72,14 +72,21 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 //var bottomElement = driver.FindElement(By.CssSelector(".button.button-yellow"));
                 // var BottomElement = driver.FindElement(By.ClassName("message-box-message"));
                 //jse.ExecuteScript("arguments[0].scrollIntoView(true)", bottomElement);
-                jse.ExecuteScript("window.scrollTo(0,document.body.scrollHeight - 1000)");
-
+                jse.ExecuteScript("window.scrollBy(0, document.body.scrollHeight)");
+                for (int i=0; i < 7; i++)
+                {
+                    jse.ExecuteScript("window.scrollBy(0,-300)");
+                    Thread.Sleep(TimeSpan.FromMilliseconds(200));
+                }
+                //jse.ExecuteScript(
+                    //"require('sport-infinite-scroll')($('#sport-events-list-content'),'\\/bets\\/ajax\\/loadmoreofferedsports\\/?timeTo=&rateFrom=&rateTo=&date=&pageSize=100',51,$('#sport-events-list-ajax-loading'),$('#sport-events-list-ajax-error'),'#sport-events-list-ajax-load-more');");
                 try
                 {
                     wait.Until(d => d.FindElements(By.CssSelector(".event-name")).Count > previousMatchesNames.Count);
                 }
                 catch
                 {
+                       
                     break;
                 }
             }
