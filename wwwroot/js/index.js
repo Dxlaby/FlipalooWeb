@@ -1,4 +1,3 @@
-
 let page = 0;
 let pageSize = 36;
 let gird = document.getElementsByClassName("event-grid")[0];

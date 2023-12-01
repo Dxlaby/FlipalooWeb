@@ -1,21 +1,76 @@
 @using FlipalooWeb.DataStructure
+@using System.Text.Json;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model Event
 
 <link rel="stylesheet" href="~/css/index.css" />
+<link rel="stylesheet" href="~/css/counter.css"/>
 
 @using (Html.BeginForm("Counter", "Home", FormMethod.Post))
 {
     <p>@Model.Name</p>
+    
     @foreach (Odd odd in Model.Odds)
     {
-        <a href="{{urlReference}}" class="odd {{bettingShop}}">
-            <div class="odd @odd.BettingShop">
-                @odd.BettingShop : @odd.BettingOdd
-            </div>
-        </a>
+        <div class="odds">
+            <a href="@odd.UrlReference" class="odd @odd.BettingShop">
+                <div class="odd @odd.BettingShop">
+                    @odd.BettingShop : @odd.BettingOdd
+                </div>
+            </a>
+            <input class="odd-input" type="number" min="0" step="100"/> Kč
+        </div>
     }
-    <input/>
 }
+<p>
+    Vsadit: <input id="bet-input" type="number" min="0" step="100"/> Kč
+</p>
+<p>
+    Zhruba vyhrát: <input id="win-input" type="number" min="0" step="100"/> Kč
+</p>
+<p>
+    Profit: <b id="profit"> hh</b> KČ
+</p>
+    
+    
+<script>
+    const model = @{@Html.Raw(JsonSerializer.Serialize(Model));};
+    const oddInputs = document.getElementsByClassName("odd-input");
+    const betInput = document.getElementById("bet-input");
+    const winInput = document.getElementById("win-input");
+    const profit = document.getElementById("profit");
+    
+    for (let i = 0; i < model.Odds.length; i++) {
+        oddInputs[i].addEventListener('input', function (){
+            createValues(oddInputs[i].value*model.Odds[i].BettingOdd*model.ImpliedProbability)
+        })
+    }
+    
+    betInput.addEventListener('input', function (){
+        createValues(betInput.value)
+    })
+    
+    winInput.addEventListener('input', function (){
+        createValues(Math.round(winInput.value*model.ImpliedProbability))    
+    })
+    
+    window.addEventListener("load", function () {
+        createValues(1000);
+    });
+    
+    function createValues(howMuchToBet) {
+        betInput.value = 0;
+        winInput.value = 0;
+        for (let i = 0; i < model.Odds.length; i++) {
+             let whatToBet = Math.round(howMuchToBet/model.ImpliedProbability/model.Odds[i].BettingOdd);
+             oddInputs[i].value = whatToBet;
+             betInput.value = parseFloat(betInput.value) + whatToBet;
+             winInput.value = parseFloat(winInput.value) + whatToBet*model.Odds[i].BettingOdd;
+        }
+        winInput.value = Math.round(parseFloat(winInput.value)/model.Odds.length);
+        profit.innerText = Math.round(parseFloat(winInput.value) - parseFloat(betInput.value));
+    }
+    
+</script>
