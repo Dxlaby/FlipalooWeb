@@ -10,7 +10,7 @@
 
 @using (Html.BeginForm("Counter", "Home", FormMethod.Post))
 {
-    <p>@Model.Name</p>
+    <p>@Model.Name - @Model.Date</p>
     
     @foreach (Odd odd in Model.Odds)
     {

@@ -23,6 +23,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         private readonly string _nameElementPath;
         private readonly string _oddsElementPath;
         private readonly string _oddElementPath;
+        private readonly string _oddElementPath2;
         private readonly string _showButtonElementPath;
         //By sportBoxElementPath;
         private readonly string _regionBoxElementPath;
@@ -63,6 +64,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name tw-truncate" + "']";
             _oddsElementPath = ".//*[@class='" + "table__markets__market" + "']";
             _oddElementPath = ".//*[@class='" + "selections__selection__odd" + "']";
+            _oddElementPath2 = ".//*[@class='" + "table__markets__market events-list__grid__event--separator" + "']";
             _showButtonElementPath = ".//*[@class='" + "tw-bg-n-17-black-pearl" + "']";
             //sportBoxElementPath = By.CssSelector(".sport-block__item");
             _regionBoxElementPath = ".//*[@class='" + "tw-flex tw-flex-col tw-pb-m tw-pt-n tw-bg-white-snow" + "']";
@@ -196,7 +198,14 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
             catch
             {
-                return null;
+                try
+                {
+                    oddElements = oddsElement.SelectNodes(_oddElementPath2);
+                }
+                catch
+                {
+                    return null;
+                }
             }
             
             List<Odd?> oddsList = new List<Odd?>();
