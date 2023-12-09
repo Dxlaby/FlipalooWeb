@@ -1,4 +1,5 @@
-﻿
+﻿using System.Text.Json;
+
 
 namespace FlipalooWeb.Background
 {
@@ -15,9 +16,17 @@ namespace FlipalooWeb.Background
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                string timeInfo = "od ";
+                timeInfo += DateTime.Now.ToString("d. M. H:mm");
+                
                 OddsFinder oddsFinder = new OddsFinder();
                 oddsFinder.FindOdds();
-                await Task.Delay(TimeSpan.FromHours(24));
+
+                timeInfo += "\ndo ";
+                timeInfo += DateTime.Now.ToString("d. M. H:mm");
+                File.WriteAllText(@"wwwroot/Data/LastLoaded.txt", timeInfo);
+                
+                await Task.Delay(TimeSpan.FromHours(8));
             }
         }
     }

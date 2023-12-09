@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Data\BettingOdds\" />
     <Folder Include="wwwroot\Drivers\" />
     <Folder Include="wwwroot\Drivers\chromedriver_linux64\" />
   </ItemGroup>
