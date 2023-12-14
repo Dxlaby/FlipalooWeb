@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Data\BettingOdds.json~RF3c62214.TMP" />
+    <Content Remove="wwwroot\favicon1.ico" />
+    <Content Remove="wwwroot\logo2.jpg" />
   </ItemGroup>
 
   <ItemGroup>

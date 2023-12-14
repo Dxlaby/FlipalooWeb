@@ -61,7 +61,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         private ListOfMatches FindMatchesByUrl(IWebDriver driver, string url)
         {
             driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             wait.Until(ExpectedConditions.ElementIsVisible(matchElementPath));
             IReadOnlyCollection<IWebElement>? matchesElements = driver.FindElements(matchElementPath);
             ListOfMatches listOfMatches = new ListOfMatches();
