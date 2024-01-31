@@ -59,10 +59,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 "https://www.betano.cz/sport/box/", 
                 "https://www.betano.cz/sport/rugby-union/"
             };
-            _matchElementPath = ".//*[@class='" + "events-list__grid__event" + "']";
-            _namesElementPath = ".//*[@class='" + "events-list__grid__info__main__participants" + "']";
-            _nameElementPath = ".//*[@class='" + "events-list__grid__info__main__participants__participant-name tw-truncate" + "']";
-            _oddsElementPath = ".//*[@class='" + "table__markets__market" + "']";
+            _matchElementPath = ".//*[@class='" + "vue-recycle-scroller__item-view" + "']";
+            _namesElementPath = ".//*[@class='" + "tw-flex tw-flex-1 tw-flex-col tw-min-w-0" + "']";
+            _nameElementPath = ".//*[@class='" + "tw-text-n-13-steel tw-inline-block tw-align-top tw-w-auto tw-pl-xs" + "']";
+            _oddsElementPath = ".//*[@class='" + "tw-flex-1" + "']";
             _oddElementPath = ".//*[@class='" + "selections__selection__odd" + "']";
             _oddElementPath2 = ".//*[@class='" + "table__markets__market events-list__grid__event--separator" + "']";
             _showButtonElementPath = ".//*[@class='" + "tw-bg-n-17-black-pearl" + "']";
@@ -75,7 +75,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             //oddClassName = "btnRate";
             //blockedOddClassName = "btnRate disabled";
-            _referenceLinkElementPath = ".//*[@class='" + "GTM-event-link events-list__grid__info__main tw-no-underline" + "']";
+            _referenceLinkElementPath = ".//*[@class='" + "tw-flex-1 tw-p-n tw-no-underline tw-text-inherit" + "']";
             _timeElementPath = ".//*[@class='" + "tw-flex tw-flex-row tw-justify-start tw-items-center tw-text-xs tw-leading-s tw-flex-col-reverse tw-justify-center tw-text-n-48-slate"
                                               + "']";
         }
@@ -280,6 +280,14 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             string[] times = time.Split(":", 2);
             try
             {
+                if (int.Parse(dates[1]) == 2 && int.Parse(dates[0]) == 29 && DateTime.Now.Year%4 == 0) 
+                    return new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
+                        int.Parse(times[0]), int.Parse(times[1]), 0);
+                else if (int.Parse(dates[1]) == 2 && int.Parse(dates[0]) == 29 && (DateTime.Now.Year+1)%4 == 0) 
+                    return new DateTime(DateTime.Now.Year+1, int.Parse(dates[1]), int.Parse(dates[0]),
+                    int.Parse(times[0]), int.Parse(times[1]), 0);
+                //This is for leap years. Man I hate time
+                
                 DateTime dateYearNow = new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
                     int.Parse(times[0]), int.Parse(times[1]), 0);
                 DateTime dateYearLater = new DateTime(DateTime.Now.Year + 1, int.Parse(dates[1]), int.Parse(dates[0]),

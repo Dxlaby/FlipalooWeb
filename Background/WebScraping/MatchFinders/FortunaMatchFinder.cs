@@ -27,7 +27,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             _bettingShopName = "Fortuna";
             url = "https://www.ifortuna.cz/sazeni?selectDates=1";//"https://www.ifortuna.cz/sazeni/fotbal";//
             cookieButtonElementPath = By.Id("cookie-consent-button-accept");
-            matchesElementPath = By.TagName("tr");
+            matchesElementPath = By.CssSelector(".tablesorter-hasChildRow");
             namesElementPath = By.CssSelector(".market-name");
             oddsElementPath = By.CssSelector(".odds-value");
             referenceLinkElementPath = By.CssSelector(".event-link");
@@ -208,6 +208,15 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             string[] dates = date.Split(".");
             string[] times = time.Split(":", 2);
+            
+            if (int.Parse(dates[1]) == 2 && int.Parse(dates[0]) == 29 && DateTime.Now.Year%4 == 0) 
+                return new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
+                    int.Parse(times[0]), int.Parse(times[1]), 0);
+            else if (int.Parse(dates[1]) == 2 && int.Parse(dates[0]) == 29 && (DateTime.Now.Year+1)%4 == 0) 
+                return new DateTime(DateTime.Now.Year+1, int.Parse(dates[1]), int.Parse(dates[0]),
+                    int.Parse(times[0]), int.Parse(times[1]), 0);
+            //This is for leap years. Man I hate time
+
             DateTime dateYearNow = new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
                 int.Parse(times[0]),int.Parse(times[1]), 0);
             DateTime dateYearLater = new DateTime(DateTime.Now.Year + 1, int.Parse(dates[1]), int.Parse(dates[0]),
