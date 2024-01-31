@@ -52,6 +52,8 @@
 
         private string NormalizeString(string matchName)
         {
+            //here is the core in finding if two events from different betting shops are the same events
+            
             matchName = matchName.Replace("/", " ");
             matchName = matchName.Replace(".", " ");
             
@@ -75,9 +77,11 @@
                 finalTeamWordList = teamWordsArray.ToList();
             }
 
-            matchName = String.Join("", finalTeamWordList);
-
-            return matchName;
+            string newMatchName = String.Join("", finalTeamWordList);
+            if (newMatchName == "")
+                return String.Join("", teamWordsArray);
+                    
+            return newMatchName;
         }
     }
 }
