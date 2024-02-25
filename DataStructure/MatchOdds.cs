@@ -4,35 +4,35 @@ namespace FlipalooWeb.DataStructure
 {
     public class MatchOdds
     {
-        public Odd?[] Odds { get; set; }
-
-        public MatchOdds(Odd?[] odds) 
+        public Odds?[] OddsTable { get; set; }
+        //Odds table are odds, where more than one outcome can happen
+        //It's called table because it has lots of different combinations of 1, 0, 2, even though it's just an array
+        //BettingOdds are in oder 1, 0, 2, 10, 02, 12 for three outcome matches
+        //for two outcome matches is just 1, 2
+        public MatchOdds(Odds?[] oddsTable) 
         {
-            Odds = odds;
+            OddsTable = oddsTable;
 
-            if (Odds.Length != 2 && Odds.Length != 6)
-                throw new Exception("You can only give array as argument, if it has 2 or 6 odds");
+            if (OddsTable.Length != 2 && OddsTable.Length != 6)
+                throw new Exception("You can only give array as argument, if it has 2 or 6 oddsTable");
         }
 
         public void Merge(MatchOdds matchOdds) 
         {
-            for (int i = 0; i < Odds.Length; i++)
+            for (int i = 0; i < OddsTable.Length; i++)
             {
-                if (matchOdds.Odds[i] == null)
+                if (matchOdds.OddsTable[i] == null)
                 {
                     continue;
                 }
-                else if (Odds[i] == null)
+                else if (OddsTable[i] == null)
                 {
-                    Odds[i] = matchOdds.Odds[i];
-                }
-                else if (Odds[i].BettingOdd > matchOdds.Odds[i].BettingOdd)
-                {
-                    continue;
+                    OddsTable[i] = matchOdds.OddsTable[i];
                 }
                 else
                 {
-                    Odds[i] = matchOdds.Odds[i];
+                    OddsTable[i].BettingOdds.AddRange(matchOdds.OddsTable[i].BettingOdds);
+                    OddsTable[i].Sort();
                 }
             }
         }
@@ -41,98 +41,99 @@ namespace FlipalooWeb.DataStructure
         {
             List<Event> events = new List<Event>();
 
-            if (Odds.Length == 2)
+            if (OddsTable.Length == 2)
             {
-                if (Odds[0] != null && Odds[1] != null)
+                if (OddsTable[0] != null && OddsTable[1] != null)
                 {
-                    List<Odd> odds = new List<Odd>();
-                    odds.Add(Odds[0]);
-                    odds.Add(Odds[1]);
+                    List<Odds> odds = new List<Odds>();
+                    odds.Add(OddsTable[0]);
+                    odds.Add(OddsTable[1]);
 
-                    float impliedProbability = GetImpliedProbability(odds);
-                    float profitPercentage = GetProfitPercentage(odds);
+                    float bestImpliedProbability = GetBestImpliedProbability(odds);
+                    float bestProfitPercentage = GetBestProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
-                        impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
+                        bestImpliedProbability, bestProfitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
             }
-            else if (Odds.Length == 6)
+            else if (OddsTable.Length == 6)
             {
                 //BettingOdds are in oder 1, 0, 2, 10, 02, 12 for three outcome matches
-                if (Odds[0] != null && Odds[1] != null && Odds[2] != null)
+                if (OddsTable[0] != null && OddsTable[1] != null && OddsTable[2] != null)
                 {
-                    List<Odd> odds = new List<Odd>();
-                    odds.Add(Odds[0]);
-                    odds.Add(Odds[1]);
-                    odds.Add(Odds[2]);
+                    List<Odds> odds = new List<Odds>();
+                    odds.Add(OddsTable[0]);
+                    odds.Add(OddsTable[1]);
+                    odds.Add(OddsTable[2]);
 
-                    float impliedProbability = GetImpliedProbability(odds);
-                    float profitPercentage = GetProfitPercentage(odds);
+                    float impliedProbability = GetBestImpliedProbability(odds);
+                    float profitPercentage = GetBestProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
                         impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);                    
                     events.Add(newEvent);
                 }
-                if (Odds[0] != null && Odds[4] != null)
+                if (OddsTable[0] != null && OddsTable[4] != null)
                 {
-                    List<Odd> odds = new List<Odd>();
-                    odds.Add(Odds[0]);
-                    odds.Add(Odds[4]);
+                    List<Odds> odds = new List<Odds>();
+                    odds.Add(OddsTable[0]);
+                    odds.Add(OddsTable[4]);
 
-                    float impliedProbability = GetImpliedProbability(odds);
-                    float profitPercentage = GetProfitPercentage(odds);
+                    float impliedProbability = GetBestImpliedProbability(odds);
+                    float profitPercentage = GetBestProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
                         impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);                    
                     events.Add(newEvent);
                 }
-                if (Odds[1] != null && Odds[5] != null)
+                if (OddsTable[1] != null && OddsTable[5] != null)
                 {
-                    List<Odd> odds = new List<Odd>();
-                    odds.Add(Odds[1]);
-                    odds.Add(Odds[5]);
+                    List<Odds> odds = new List<Odds>();
+                    odds.Add(OddsTable[1]);
+                    odds.Add(OddsTable[5]);
 
-                    float impliedProbability = GetImpliedProbability(odds);
-                    float profitPercentage = GetProfitPercentage(odds);
+                    float impliedProbability = GetBestImpliedProbability(odds);
+                    float profitPercentage = GetBestProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
                         impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
-                if (Odds[2] != null && Odds[3] != null)
+                if (OddsTable[2] != null && OddsTable[3] != null)
                 {
-                    List<Odd> odds = new List<Odd>();
-                    odds.Add(Odds[2]);
-                    odds.Add(Odds[3]);
+                    List<Odds> odds = new List<Odds>();
+                    odds.Add(OddsTable[2]);
+                    odds.Add(OddsTable[3]);
 
-                    float impliedProbability = GetImpliedProbability(odds);
-                    float profitPercentage = GetProfitPercentage(odds);
+                    float impliedProbability = GetBestImpliedProbability(odds);
+                    float profitPercentage = GetBestProfitPercentage(odds);
                     
                     Event newEvent = new Event(name, teamName1,  teamName2,
                         impliedProbability, profitPercentage, date.ToString("d. M. H:mm"), odds);
                     events.Add(newEvent);
                 }
             }
-
+            
             return events;
         }
 
-        private float GetImpliedProbability(List<Odd> odds)
+        private float GetBestImpliedProbability(List<Odds> odds)
         {
             float impliedProbability = 0;
-            foreach (Odd odd in odds)
+            foreach (Odds odd in odds)
             {
-                impliedProbability += 1 / odd.BettingOdd;
+                impliedProbability += 1 / odd.BettingOdds[0].BettingOdd; //the [0] is to find maximum implied probability this event has
             }
             
             return impliedProbability;
         }
         
-        public float GetProfitPercentage(List<Odd> odds)
+        public float GetBestProfitPercentage(List<Odds> odds)
         {
-            float profitPercentage = (1 / GetImpliedProbability(odds) - 1) * 100;
+            float profitPercentage = (1 / GetBestImpliedProbability(odds) - 1) * 100;
             return (float)Math.Round(profitPercentage, 2);
         }
+        
     }
 }

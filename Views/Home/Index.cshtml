@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using System.Text.Json
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Flipaloo";
 }
 
 <link rel="stylesheet" href="~/css/index.css" />
@@ -34,23 +34,25 @@
                         <h6>{{name}} - {{date}}</h6>
                     </a>
                 </div>
-                {{#if_grt profitPercentage 0}}
+                {{#if_grt bestProfitPercentage 0}}
                     <div class="profit green">
-                        <b>Profit: {{profitPercentage}} %</b>
+                        <b>Profit: {{bestProfitPercentage}} %</b>
                     </div>
                 {{else}}
                     <div class="profit red">
-                        <b>Profit: {{profitPercentage}} %</b>
+                        <b>Profit: {{bestProfitPercentage}} %</b>
                     </div>
                 {{/if_grt}}
             </div>
             <div class="odds">
-                {{#each odds}}
+                {{#each setOfOdds}}
+                    {{#with bettingOdds.[0]}}
                     <a href="{{urlReference}}" class="odd {{bettingShop}}">
                         <div class="odd {{bettingShop}}">
                             {{bettingShop}}: {{bettingOdd}}
                         </div>
                     </a>
+                    {{/with}}
                 {{/each}}
             </div>
         </div>  

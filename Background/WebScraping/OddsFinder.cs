@@ -36,7 +36,7 @@ namespace FlipalooWeb.Background
             }
 
             List<Event> finalListOfEvents = finalListOfMatches.SplitToEvents();
-            finalListOfEvents.Sort((a, b) => a.ImpliedProbability.CompareTo(b.ImpliedProbability));
+            finalListOfEvents.Sort((a, b) => a.BestImpliedProbability.CompareTo(b.BestImpliedProbability));
             var listOfEvents = finalListOfEvents.Take(500);
             string json = JsonSerializer.Serialize<IEnumerable<Event>>(listOfEvents);
             File.WriteAllText(@"wwwroot/Data/BettingOdds.json", json);

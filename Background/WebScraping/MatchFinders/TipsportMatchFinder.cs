@@ -96,25 +96,29 @@ namespace FlipalooWeb.Background.BettingOddsFinders
 
             var recognitionTeams = GetRecognitionTeams(matchName);
 
-            if (sortedOdds.Odds.Length == 2)
+            if (sortedOdds.OddsTable.Length == 2)
                 return new Match(matchName, recognitionTeams.Item1, 
                     recognitionTeams.Item2, dateTime, sortedOdds);
-            else if (sortedOdds.Odds.Length == 6)
+            else if (sortedOdds.OddsTable.Length == 6)
                 return new Match(matchName, recognitionTeams.Item1, 
                     recognitionTeams.Item2, dateTime, sortedOdds);
             else
                 return null;
         }
 
-        private Odd?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
+        private Odds?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
         {
             var maybeOddElements = oddsElement.FindElements(By.TagName("div"));
-            List<Odd?> oddsList = new List<Odd?>();
+            List<Odds?> oddsList = new List<Odds?>();
 
             foreach (IWebElement maybeOddElement in maybeOddElements)
             {
                 if (maybeOddElement.GetAttribute("class") == oddClassName)
-                    oddsList.Add(GetOddFromElement(maybeOddElement, referenceUrl));
+                {
+                    List<Odd> oddList = new List<Odd>();
+                    oddList.Add(GetOddFromElement(maybeOddElement, referenceUrl));
+                    oddsList.Add(new Odds(oddList));
+                }
                 else if (maybeOddElement.GetAttribute("class") == blockedOddClassName)
                     oddsList.Add(null);
             }
@@ -128,7 +132,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             return new Odd(bettingShopName, referenceUrl, odd.Value);
         }
 
-        private MatchOdds SortOdds(Odd?[] roughOdds)
+        private MatchOdds SortOdds(Odds?[] roughOdds)
         {
             if (roughOdds.Count() == 2)
             {
@@ -136,14 +140,14 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
             else if (roughOdds.Count() == 3)
             {
-                Odd?[] finalOdds =
+                Odds?[] finalOdds =
                 { roughOdds[0], roughOdds[1], roughOdds[2], 
                     null, null, null};
                 return new MatchOdds(finalOdds);
             }
             else if (roughOdds.Count() == 5)
             {
-                Odd?[] finalOdds =
+                Odds?[] finalOdds =
                 { roughOdds[0], roughOdds[2], roughOdds[4], 
                     roughOdds[1], roughOdds[3], null};
                 //prohazeni kurzu tak aby byly ve formatu 1, 0, 2, 10, 20, 12
@@ -151,7 +155,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
             else
             {
-                Odd?[] finalOdds = { null, null};
+                Odds?[] finalOdds = { null, null};
                 return new MatchOdds(finalOdds);
             }
         }

@@ -81,7 +81,7 @@ namespace FlipalooWeb.Controllers
                 // }
                 // </div>
                 //     <div class="odds">
-                //     @foreach (Odd odd in matchEvent.Odds)
+                //     @foreach (Odd odd in matchEvent.OddsTable)
                 // {
                 //     <a href=@odd.UrlReference class="odd @odd.BettingShop">
                 //         <div class="odd @odd.BettingShop">

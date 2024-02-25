@@ -131,7 +131,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             
             return finalListOfMatches;
         }
-
+            
         private ListOfMatches FindMatches(HtmlDocument htmlDocument)
         {
             var matchesElements = htmlDocument.DocumentNode.SelectNodes(_matchElementPath);
@@ -145,10 +145,10 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 if (match != null)
                     listOfMatches.Matches.Add(match);
             }
-
+        
             return listOfMatches;
         }
-
+        
         private Match? GetMatchFromElement(HtmlNode matchElement)
         {
             var matchNameElements = matchElement.SelectNodes(_nameElementPath);
@@ -166,7 +166,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             if ((dateTime.Value - DateTime.Now).TotalHours < 2)
                 return null;
             
-            Odd?[]? roughOdds = null;
+            Odds?[]? roughOdds = null;
             
             var oddsElement = matchElement.SelectSingleNode(_oddsElementPath);
             if (oddsElement == null)
@@ -174,22 +174,22 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             roughOdds = GetOddsFromElement(oddsElement, referenceUrl);
             
             var sortedOdds = SortOdds(roughOdds);
-
+        
             var recognitionTeams = GetRecognitionTeams(matchName);
-
+        
             if (sortedOdds == null)
                 return null;
-            else if (sortedOdds.Odds.Length == 2)
+            else if (sortedOdds.OddsTable.Length == 2)
                 return new Match(matchName, recognitionTeams.Item1, 
                     recognitionTeams.Item2, dateTime.Value, sortedOdds);
-            else if (sortedOdds.Odds.Length == 6)
+            else if (sortedOdds.OddsTable.Length == 6)
                 return new Match(matchName, recognitionTeams.Item1,
                     recognitionTeams.Item2, dateTime.Value, sortedOdds);
             else
                 return null;
         }
-
-        private Odd?[]? GetOddsFromElement(HtmlNode oddsElement, string referenceUrl)
+        
+        private Odds?[]? GetOddsFromElement(HtmlNode oddsElement, string referenceUrl)
         {
             var oddElements = new HtmlNodeCollection(oddsElement);
             try
@@ -208,7 +208,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 }
             }
             
-            List<Odd?> oddsList = new List<Odd?>();
+            List<Odds?> oddsList = new List<Odds?>();
             
             if (oddElements == null)
                 return oddsList.ToArray();
@@ -216,12 +216,15 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             foreach (var oddElement in oddElements)
             {
                 var odd = GetOddFromElement(oddElement, referenceUrl);
-                oddsList.Add(odd);
+                var listOfOdd = new List<Odd>();
+                listOfOdd.Add(odd);
+                var odds = new Odds(listOfOdd);
+                oddsList.Add(odds);
             }
-
+        
             return oddsList.ToArray();
         }
-
+        
         private Odd? GetOddFromElement(HtmlNode element, string referenceUrl)
         {
             float? odd = float.Parse(element.InnerText.Replace(" ", ""), CultureInfo.InvariantCulture.NumberFormat);
@@ -229,24 +232,24 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return null;
             return new Odd(_bettingShopName, referenceUrl, odd.Value);
         }
-
-        private MatchOdds? SortOdds(Odd?[] roughOdds)
+        
+        private MatchOdds? SortOdds(Odds?[] roughOdds)
         {
-
+        
             if (roughOdds.Count() == 2)
             {
                 return new MatchOdds(roughOdds);
             }
             else if (roughOdds.Count() == 3)
             {
-                Odd?[] finalOdds =
+                Odds?[] finalOdds =
                 { roughOdds[0], roughOdds[1], roughOdds[2],
                     null, null, null};
                 return new MatchOdds(finalOdds);
             }
             else if (roughOdds.Count() == 5)
             {
-                Odd?[] finalOdds =
+                Odds?[] finalOdds =
                 { roughOdds[0], roughOdds[2], roughOdds[4],
                     roughOdds[1], roughOdds[3], null};
                 //prohazeni kurzu tak aby byly ve formatu 1, 0, 2, 10, 20, 12
@@ -257,7 +260,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return null;
             }
         }
-
+        
         private Tuple<string, string> GetRecognitionTeams(string matchName)
         {
             matchName = RemoveDiacritics(matchName);
@@ -273,7 +276,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return new Tuple<string, string>(teamNames[0], "");
             }
         }
-
+        
         private DateTime? GetDate(string date, string time) //not ideal to how try method here
         {
             string[] dates = date.Split(".", 2);

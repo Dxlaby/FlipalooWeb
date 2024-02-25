@@ -3,6 +3,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    ViewData["Title"] = "Počítadlo";
+} 
 @model Event
 
 <link rel="stylesheet" href="~/css/index.css" />
@@ -12,12 +15,12 @@
 {
     <p>@Model.Name - @Model.Date</p>
     
-    @foreach (Odd odd in Model.Odds)
+    @foreach (Odds odds in Model.SetOfOdds)
     {
-        <div class="odds">
-            <a href="@odd.UrlReference" class="odd @odd.BettingShop">
-                <div class="odd @odd.BettingShop">
-                    @odd.BettingShop : @odd.BettingOdd
+        <div class="setOfOddsTable">
+            <a href="@odds.BettingOdds[0].UrlReference" class="odd @odds.BettingOdds[0].BettingShop">
+                <div class="odd @odds.BettingOdds[0].BettingShop">
+                    @odds.BettingOdds[0].BettingShop : @odds.BettingOdds[0].BettingOdd
                 </div>
             </a>
             <input class="odd-input" type="number" min="0" step="100"/> Kč
@@ -42,9 +45,9 @@
     const winInput = document.getElementById("win-input");
     const profit = document.getElementById("profit");
     
-    for (let i = 0; i < model.Odds.length; i++) {
+    for (let i = 0; i < model.OddsTable.length; i++) {
         oddInputs[i].addEventListener('input', function (){
-            createValues(oddInputs[i].value*model.Odds[i].BettingOdd*model.ImpliedProbability)
+            createValues(oddInputs[i].value*model.OddsTable[i].BettingOdd*model.BestImpliedProbability)
         })
     }
     
@@ -53,7 +56,7 @@
     })
     
     winInput.addEventListener('input', function (){
-        createValues(Math.round(winInput.value*model.ImpliedProbability))    
+        createValues(Math.round(winInput.value*model.BestImpliedProbability))    
     })
     
     window.addEventListener("load", function () {
@@ -63,13 +66,13 @@
     function createValues(howMuchToBet) {
         betInput.value = 0;
         winInput.value = 0;
-        for (let i = 0; i < model.Odds.length; i++) {
-             let whatToBet = Math.round(howMuchToBet/model.ImpliedProbability/model.Odds[i].BettingOdd);
+        for (let i = 0; i < model.OddsTable.length; i++) {
+             let whatToBet = Math.round(howMuchToBet/model.BestImpliedProbability/model.OddsTable[i].BettingOdd);
              oddInputs[i].value = whatToBet;
              betInput.value = parseFloat(betInput.value) + whatToBet;
-             winInput.value = parseFloat(winInput.value) + whatToBet*model.Odds[i].BettingOdd;
+             winInput.value = parseFloat(winInput.value) + whatToBet*model.OddsTable[i].BettingOdd;
         }
-        winInput.value = Math.round(parseFloat(winInput.value)/model.Odds.length);
+        winInput.value = Math.round(parseFloat(winInput.value)/model.OddsTable.length);
         profit.innerText = Math.round(parseFloat(winInput.value) - parseFloat(betInput.value));
     }
     

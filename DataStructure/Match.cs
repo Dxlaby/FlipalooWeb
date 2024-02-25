@@ -7,7 +7,7 @@
         public string RecognitionTeamName2 { get; set; }
         public DateTime Date { get; set; }
         public MatchOdds Odds { get; set; }
-        public Match (string name, string recognitionTeamName1, string recognitionTeamName2, DateTime date, Odd?[] odds)
+        public Match (string name, string recognitionTeamName1, string recognitionTeamName2, DateTime date, Odds?[] odds)
         {
             Name = name;
             RecognitionTeamName1 = NormalizeString(recognitionTeamName1);
@@ -41,7 +41,7 @@
                 || otherMatch.RecognitionTeamName1.Contains(RecognitionTeamName1))
                 && (RecognitionTeamName2.Contains(otherMatch.RecognitionTeamName2) 
                 || otherMatch.RecognitionTeamName2.Contains(RecognitionTeamName2))
-                && (Odds.Odds.Length == otherMatch.Odds.Odds.Length)
+                && (Odds.OddsTable.Length == otherMatch.Odds.OddsTable.Length)
                 && (Date.Date == otherMatch.Date.Date))
             {
                 return true;

@@ -7,6 +7,7 @@
         public string BettingShop { get; set; }
         public string UrlReference { get; set; }
         public float BettingOdd { get; set; }
+        
         public Odd(string bettingShop, string urlReference, float bettingOdd)
         {
             BettingShop = bettingShop;

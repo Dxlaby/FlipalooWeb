@@ -35,7 +35,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
         }
 
         public ListOfMatches FindAllMatches(string geckoDriverDirectory, FirefoxOptions options, TimeSpan commandTimeOut)
-        { 
+        {
             //initialize driver and stu
             using (var driver = new FirefoxDriver(geckoDriverDirectory, options, commandTimeOut))
             {
@@ -54,18 +54,18 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 {
                 
                 }
-
+        
                 ScrollDown(driver, wait);
             
                 //finally find all matches odds
                 return FindListOfMatches(driver);
             }
         }
-
+            
         public void ScrollDown(IWebDriver driver, WebDriverWait wait)
         {
             IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
-
+        
             while (true)
             {
                 var previousMatchesNames = driver.FindElements(By.CssSelector(".event-name"));
@@ -91,7 +91,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 }
             }
         }
-
+            
         public ListOfMatches FindListOfMatches(IWebDriver driver)
         {
             var matchesElements = driver.FindElements(matchesElementPath);
@@ -105,7 +105,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
             return listOfMatches;
         }
-
+        
         private Match? GetMatchFromElement(IWebElement matchElement)
         {
           //not all matchElements have matches. Some of them are just rows with information
@@ -121,33 +121,33 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             string matchName = matchNameElement.Text;
             IWebElement referenceElement = matchElement.FindElement(referenceLinkElementPath);
             string referenceUrl = referenceElement.GetAttribute("href");
-
+        
             IWebElement dateElement = matchElement.FindElement(dateElementPath);
             DateTime dateTime = GetDate(dateElement.Text);
             if ((dateTime - DateTime.Now).TotalHours < 2)
                 return null;
-    
+        
             var roughOdds = GetOddsFromElement(matchElement, referenceUrl);
             MatchOdds? sortedOdds = SortOdds(roughOdds);
             
             var recognitionTeams = GetRecognitionTeams(matchName);
-
+        
             if (sortedOdds == null)
                 return null;
-            else if (sortedOdds.Odds.Length == 2)
+            else if (sortedOdds.OddsTable.Length == 2)
                 return new Match(matchName, recognitionTeams.Item1, 
                     recognitionTeams.Item2, dateTime, sortedOdds);
-            else if (sortedOdds.Odds.Length == 6)
+            else if (sortedOdds.OddsTable.Length == 6)
                 return new Match(matchName, recognitionTeams.Item1, 
                     recognitionTeams.Item2, dateTime, sortedOdds);
             else
                 return null;
         }
-
-        private Odd?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
+        
+        private Odds?[] GetOddsFromElement(IWebElement oddsElement, string referenceUrl)
         {
             var oddElements = oddsElement.FindElements(oddsElementPath);
-            List<Odd?> odds = new List<Odd?>();
+            List<Odds?> oddsList = new List<Odds?>();
             foreach (IWebElement maybeOddElement in oddElements)
             {
                 try
@@ -155,22 +155,24 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                     float bettingOdd = float.Parse(maybeOddElement.Text, CultureInfo.InvariantCulture.NumberFormat);
                     if (bettingOdd > 1)
                     {
+                        List<Odd> oddList = new List<Odd>();
                         Odd odd = new Odd(_bettingShopName, referenceUrl, bettingOdd);
-                        odds.Add(odd);
+                        oddList.Add(odd);
+                        oddsList.Add(new Odds(oddList));
                     }
                     else
-                        odds.Add(null);
+                        oddsList.Add(null);
                 }
                 catch
                 {
-                    odds.Add(null);
+                    oddsList.Add(null);
                 }
             }
-
-            return odds.ToArray();
+        
+            return oddsList.ToArray();
         }
-
-        private MatchOdds? SortOdds(Odd?[] roughOdds)
+        
+        private MatchOdds? SortOdds(Odds?[] roughOdds)
         {
             if (roughOdds.Length == 2 || roughOdds.Length == 6)
             {
@@ -181,7 +183,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return null;
             }
         }
-
+        
         private Tuple<string, string> GetRecognitionTeams(string matchName)
         {
             matchName = RemoveDiacritics(matchName);
@@ -198,11 +200,11 @@ namespace FlipalooWeb.Background.BettingOddsFinders
             }
                 
         }
-
+        
         private DateTime GetDate(string dateText)
         {
             string[] dateAndTime = dateText.Split(" ");
-
+        
             string date = dateAndTime[0];
             string time = dateAndTime[1];
             
@@ -216,7 +218,7 @@ namespace FlipalooWeb.Background.BettingOddsFinders
                 return new DateTime(DateTime.Now.Year+1, int.Parse(dates[1]), int.Parse(dates[0]),
                     int.Parse(times[0]), int.Parse(times[1]), 0);
             //This is for leap years. Man I hate time
-
+        
             DateTime dateYearNow = new DateTime(DateTime.Now.Year, int.Parse(dates[1]), int.Parse(dates[0]),
                 int.Parse(times[0]),int.Parse(times[1]), 0);
             DateTime dateYearLater = new DateTime(DateTime.Now.Year + 1, int.Parse(dates[1]), int.Parse(dates[0]),
